@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://lab.lepture.com/editor/editor.css"/>
+    <link rel="stylesheet" href="/static/css/editor_style.css"/>
+    <script type="text/javascript" src="http://lab.lepture.com/editor/editor.js"></script>
+    <script type="text/javascript" src="http://lab.lepture.com/editor/marked.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Article editor</title>
+</head>
+<body>
+<div class="header-main-actions">
+    <div class="header-main-link">
+        <a href="/">Main</a>
+    </div>
+</div>
+<div>
+    <p th:text="${error}"></p>
+</div>
+<div class="editor-wrapper">
+    <form action="/editor/load">
+        <input class="title" type="text" placeholder="Title" name="title" th:value="${titleValue}"/>
+        <textarea id="editor" placeholder="Content here ..." name="content" th:value="${contentValue}"></textarea>
+        <input type="submit">
+    </form>
+</div>
+
+<script type="text/javascript" src="/static/js/editor.js"></script>
+</body>
+</html>
