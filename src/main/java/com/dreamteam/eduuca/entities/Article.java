@@ -34,6 +34,9 @@ public class Article {
     @Column
     private byte[] content;
 
+    @Column
+    private ArticleState state;
+
     public Article(String title, MultipartFile file) throws IOException {
         this.title = title;
         this.filename = file.getOriginalFilename();
@@ -58,8 +61,7 @@ public class Article {
 
         // You can re-use parser and renderer instances
         Node document = parser.parseReader(new FileReader(makeFile()));
-        String html = renderer.render(document);
-        return html;
+        return renderer.render(document);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class Article {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, title, filename);
+        int result = Objects.hash(id, title, filename, state);
         result = 31 * result + Arrays.hashCode(content);
         return result;
     }

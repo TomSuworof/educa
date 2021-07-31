@@ -1,5 +1,6 @@
 package com.dreamteam.eduuca.controllers;
 
+import com.dreamteam.eduuca.exceptions.UserNotFoundException;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,14 +22,15 @@ public class AdminController {
 
     @PostMapping("/admin")
     public String changeRole(@RequestParam String action, @RequestParam Long userId, Model model) {
-        if(switch(action) {
-            case "delete" -> userService.changeRole(userId, "blocked");
-            case "make_analyst" -> userService.changeRole(userId, "analyst");
-            case "make_user" -> userService.changeRole(userId, "user");
-            default -> false;
-        }) {
+        try {
+            switch (action) {
+                case "delete" -> userService.changeRole(userId, "blocked");
+                case "make_analyst" -> userService.changeRole(userId, "analyst");
+                case "make_user" -> userService.changeRole(userId, "user");
+            }
             return "redirect: /admin";
-        } else {
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
             model.addAttribute("error", "Error changing role");
             return "admin";
         }

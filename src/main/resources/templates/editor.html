@@ -23,7 +23,8 @@
     <form action="/editor/load">
         <input class="title" type="text" placeholder="Title" name="title" th:value="${titleValue}"/>
         <textarea id="editor" placeholder="Content here ..." name="content" th:value="${contentValue}"></textarea>
-        <input type="submit">
+        <input type="submit" name="action" th:value="Publish"/>
+        <input type="submit" name="action" th:value="Save"/>
     </form>
 </div>
 

@@ -2,9 +2,10 @@ package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.PasswordResetRequest;
 import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.exceptions.PasswordResetRequestNotFoundException;
+import com.dreamteam.eduuca.exceptions.UserNotFoundException;
 import com.dreamteam.eduuca.repositories.PasswordResetRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,8 +19,7 @@ public class PasswordResetService {
 
     private String email;
 
-    public boolean send(String username) {
-        try {
+    public void sendPasswordResetLinkTo(String username) throws UserNotFoundException {
             String id = UUID.randomUUID().toString();
             Date created = new Date();
             User requiredUser = (User) userService.loadUserByUsername(username);
@@ -28,11 +28,7 @@ public class PasswordResetService {
 
             String link = "";// "https://acl0ud.herokuapp.com/password_reset/change_password/" + id;
 
-            return mailService.send(email, "password_change", link);
-
-        } catch (UsernameNotFoundException e) {
-            return false;
-        }
+            mailService.send(email, "password_change", link);
     }
 
     public boolean isRequestValid(String id) {
@@ -63,42 +59,38 @@ public class PasswordResetService {
         return emailAnswer.toString();
     }
 
-    public boolean setNewPassword(String passwordNew, String id) {
-        try {
-            Optional<PasswordResetRequest> passwordResetRequest = passwordResetRepository.findById(id);
+    public void setNewPasswordOf(String passwordNew, String userId) throws PasswordResetRequestNotFoundException, UserNotFoundException {
+        Optional<PasswordResetRequest> passwordResetRequest = passwordResetRepository.findById(userId);
 
-            if (passwordResetRequest.isEmpty()) {
-                return false;
-            }
-
-            User userForNewPassword = (User) userService.loadUserByUsername(passwordResetRequest.get().getUsername());
-            userForNewPassword.setPasswordNew(passwordNew);
-            passwordResetRepository.delete(passwordResetRequest.get());
-            return userService.updateUser(userForNewPassword, true);
-        } catch (UsernameNotFoundException e) {
-            return false;
+        if (passwordResetRequest.isEmpty()) {
+            throw new PasswordResetRequestNotFoundException();
         }
+
+        User userForNewPassword = (User) userService.loadUserByUsername(passwordResetRequest.get().getUsername());
+        userForNewPassword.setPasswordNew(passwordNew);
+        passwordResetRepository.delete(passwordResetRequest.get());
+        userService.updateUser(userForNewPassword, true);
     }
 
-    public String getSecretQuestion(String id) {
-        Optional<PasswordResetRequest> passwordResetRequest = passwordResetRepository.findById(id);
+    public String getSecretQuestionOf(String userId) throws PasswordResetRequestNotFoundException, UserNotFoundException {
+        Optional<PasswordResetRequest> passwordResetRequest = passwordResetRepository.findById(userId);
 
         if (passwordResetRequest.isPresent()) {
             User userForNewPassword = (User) userService.loadUserByUsername(passwordResetRequest.get().getUsername());
             return userForNewPassword.getSecretQuestion();
         } else {
-            throw new NullPointerException();
+            throw new PasswordResetRequestNotFoundException();
         }
     }
 
-    public String getSecretAnswer(String id) {
+    public String getSecretAnswerOf(String id) throws PasswordResetRequestNotFoundException, UserNotFoundException {
         Optional<PasswordResetRequest> passwordResetRequest = passwordResetRepository.findById(id);
 
         if (passwordResetRequest.isPresent()) {
             User userForNewPassword = (User) userService.loadUserByUsername(passwordResetRequest.get().getUsername());
             return userForNewPassword.getSecretAnswer();
         } else {
-            throw new NullPointerException();
+            throw new PasswordResetRequestNotFoundException();
         }
     }
 }

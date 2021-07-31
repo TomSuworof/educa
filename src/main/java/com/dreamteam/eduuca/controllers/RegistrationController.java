@@ -1,6 +1,7 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.exceptions.UserFoundException;
 import com.dreamteam.eduuca.services.UserService;
 import com.dreamteam.eduuca.services.MailService;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,13 @@ public class RegistrationController {
             model.addAttribute("passwordError", "Passwords do not match");
             return "registration";
         }
-        if (userService.saveUser(userForm)){
+
+        try {
+            userService.saveUser(userForm);
             mailService.send(userForm.getEmail(), "registration_confirm", userForm.getUsername());
             return "redirect:/";
-        } else {
+        } catch (UserFoundException e) {
+            e.printStackTrace();
             model.addAttribute("usernameError", "Username unavailable");
             return "registration";
         }

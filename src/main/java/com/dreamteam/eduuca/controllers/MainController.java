@@ -1,6 +1,7 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.exceptions.AnonymousUserException;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,12 @@ public class MainController {
 
     @GetMapping("/")
     public String getStartPage() {
-        User currentUser = userService.getUserFromContext();
-        if (currentUser != null) {
+        try {
+            User currentUser = userService.getUserFromContext();
             return "redirect:/articles";
+        } catch (AnonymousUserException e) {
+            return "index";
         }
-        return "index";
     }
 
     @GetMapping("/login")

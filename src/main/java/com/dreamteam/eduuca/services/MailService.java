@@ -9,8 +9,7 @@ public class MailService {
     //private final MailConfig mailConfig;
 
     // todo
-    public boolean send(String to, String theme, String message) {
-        return true;
+    public void send(String to, String theme, String message) {
 //        try {
 //            HtmlEmail email = new HtmlEmail();
 //            email.setHostName(mailConfig.getHost());
@@ -34,7 +33,7 @@ public class MailService {
 //        }
     }
 
-//    private boolean sendPasswordReset(HtmlEmail email, String link) {
+//    private void sendPasswordReset(HtmlEmail email, String link) {
 //        try {
 //            email.setSubject("Password reset");
 //            email.setHtmlMsg("<html>\n" +
@@ -57,7 +56,7 @@ public class MailService {
 //        }
 //    }
 //
-//    private boolean sendRoleChanged(HtmlEmail email, String role) {
+//    private void sendRoleChanged(HtmlEmail email, String role) {
 //        role = role.equals("blocked") ? role : "an " + role;
 //        try {
 //            email.setSubject("Your role was changed");
@@ -77,7 +76,7 @@ public class MailService {
 //        }
 //    }
 //
-//    private boolean sendRegistrationConfirm(HtmlEmail email, String name) {
+//    private void sendRegistrationConfirm(HtmlEmail email, String name) {
 //        try {
 //            email.setSubject("Welcome to acloud!");
 //            email.setHtmlMsg("<html>\n" +

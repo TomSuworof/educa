@@ -1,6 +1,7 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.exceptions.UserNotFoundException;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -41,11 +42,14 @@ public class PersonalAreaController {
                     return "personal_area";
                 }
             }
-            if (!userService.updateUser(userFromForm, passwordWasChanged)) {
+            try {
+                userService.updateUser(userFromForm, passwordWasChanged);
+                return "redirect:/logout";
+            } catch (UserNotFoundException e) {
+                e.printStackTrace();
                 model.addAttribute("error", "Something went wrong");
                 return "personal_area";
             }
-            return "redirect:/logout";
         } else {
             model.addAttribute("error", "Wrong password");
             return "personal_area";

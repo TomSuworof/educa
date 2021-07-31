@@ -45,6 +45,10 @@ body {
     width: fit-content;
 }
 
-.article_title {
+.article-title {
     overflow-wrap: break-word;
+}
+
+.article-action-buttons {
+    display: inline-block;
 }

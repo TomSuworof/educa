@@ -2,18 +2,21 @@ package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.entities.Role;
+import com.dreamteam.eduuca.exceptions.AnonymousUserException;
+import com.dreamteam.eduuca.exceptions.UserFoundException;
+import com.dreamteam.eduuca.exceptions.UserNotFoundException;
 import com.dreamteam.eduuca.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,78 +27,69 @@ public class UserService implements UserDetailsService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
         UserDetails userFromDB = userRepository.findByUsername(username);
         if (userFromDB == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UserNotFoundException();
         }
         return userFromDB;
     }
 
-    public User getUserFromContext() {
+    public User getUserFromContext() throws AnonymousUserException {
         Object currentUserDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (currentUserDetails.equals("anonymousUser")) {
-            return null;
+            throw new AnonymousUserException();
         } else {
             return (User) currentUserDetails;
         }
     }
 
-    public boolean saveUser(User user) {
+    public void saveUser(User user)  throws UserFoundException {
         User userFromDB = userRepository.findByUsername(user.getUsername());
 
         if (userFromDB != null) {
-            return false;
+            throw new UserFoundException();
         }
-        int id = (user.getUsername() + user.getEmail()).hashCode();
-        user.setId((long) id);
-        user.setRoles(Collections.singleton(new Role(3L, "ROLE_USER")));
+
+        user.setId((long) user.hashCode());
+        user.setRoles(Set.of(new Role(3L, "ROLE_USER")));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return true;
     }
 
-    public boolean updateUser(User userFromForm, boolean passwordWasChanged) {
-        User userFromDB = userRepository.findById(userFromForm.getId()).orElseThrow(RuntimeException::new);
+    public void updateUser(User userFromForm, boolean passwordWasChanged) throws UserNotFoundException {
+        User userFromDB = userRepository.findById(userFromForm.getId()).orElseThrow(UserNotFoundException::new);
 
-        if (!deleteUser(userFromForm.getId())) {
-            return false;
-        }
+        deleteUser(userFromForm.getId());
 
         userFromDB.setEmail(userFromForm.getEmail());
 
         if (passwordWasChanged) {
-            return updateWithPassword(userFromDB, userFromForm.getPasswordNew());
+            updateWithPassword(userFromDB, userFromForm.getPasswordNew());
         } else {
-            return updateWithoutPassword(userFromDB);
+            updateWithoutPassword(userFromDB);
         }
     }
 
-    private boolean updateWithPassword(User userUpdated, String passwordNew) {
+    private void updateWithPassword(User userUpdated, String passwordNew) {
         userUpdated.setPassword(passwordEncoder.encode(passwordNew));
         userRepository.save(userUpdated);
-        return true;
     }
 
-    private boolean updateWithoutPassword(User userUpdated) {
+    private void updateWithoutPassword(User userUpdated) {
         userRepository.save(userUpdated);
-        return true;
     }
 
-    private boolean deleteUser(Long userId) {
+    private void deleteUser(Long userId) throws UserNotFoundException {
         if (userRepository.findById(userId).isPresent()) {
             userRepository.deleteById(userId);
-            return true;
+        } else {
+            throw new UserNotFoundException();
         }
-        return false;
     }
 
-    public boolean changeRole(Long userId, String role) {
-        User userFromDB = userRepository.findById(userId).orElseThrow(RuntimeException::new);
-
-        if (!deleteUser(userId)) {
-            return false;
-        }
+    public void changeRole(Long userId, String role) throws UserNotFoundException {
+        User userFromDB = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         switch (role) {
             case "editor" -> userFromDB.setRoles(Collections.singleton(new Role(2L, "ROLE_EDITOR")));
@@ -104,7 +98,6 @@ public class UserService implements UserDetailsService {
         }
 //        mailService.send(userFromDB.getEmail(), "role_change", role);
         userRepository.save(userFromDB);
-        return true;
     }
 
     public boolean isCurrentPasswordSameAs(String passwordAnother) {

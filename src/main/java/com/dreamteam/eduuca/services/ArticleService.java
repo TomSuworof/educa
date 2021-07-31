@@ -1,14 +1,17 @@
 package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.Article;
+import com.dreamteam.eduuca.exceptions.ArticleFoundException;
+import com.dreamteam.eduuca.exceptions.ArticleNotFoundException;
+import com.dreamteam.eduuca.exceptions.IllegalArticleExtensionException;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -16,73 +19,49 @@ import java.util.Optional;
 public class ArticleService {
     private final ArticleRepository articleRepository;
 
-    public boolean loadFile(String title, MultipartFile file) {
-        try {
-            Article article = new Article(title, file);
-            return !titleExists(title) && isMarkdown(file) && saveArticle(article);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean titleExists(String title) {
+    private boolean titleExists(String title) {
         return articleRepository.findArticleByTitle(title).isPresent();
     }
 
     private boolean isMarkdown(MultipartFile file) {
-        return file.getOriginalFilename().matches("(.*).md");
+        return Objects.requireNonNull(file.getOriginalFilename()).matches("(.*).md");
         // return Objects.equals(file.getContentType(), "md");
     }
 
-    private boolean saveArticle(Article article) {
-        try {
-            article.setId((long) article.hashCode());
-            articleRepository.save(article);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    public void saveFile(String title, MultipartFile file) throws IOException {
+        Article article = new Article(title, file);
+        if (!isMarkdown(file)) {
+            throw new IllegalArticleExtensionException();
         }
-        return true;
+        saveArticle(article);
     }
 
-    public boolean deleteArticle(Long id) {
-        Optional<Article> articleForDeleting = articleRepository.findById(id);
-        if (articleForDeleting.isPresent()) {
-            return deleteArticle(articleForDeleting.get());
+    public void saveArticle(Article article) throws ArticleFoundException {
+        if (titleExists(article.getTitle())) {
+            throw new ArticleFoundException();
         }
-        return false;
-
+        article.setId((long) article.hashCode());
+        articleRepository.save(article);
     }
 
-    private boolean deleteArticle(Article article) {
-        try {
-            articleRepository.delete(article);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    public void deleteArticle(Long articleId) throws ArticleNotFoundException {
+        if (articleRepository.findById(articleId).isPresent()) {
+            articleRepository.deleteById(articleId);
+        } else {
+            throw new ArticleNotFoundException();
         }
-        return true;
     }
 
-    public Article getArticleById(Long id) throws FileNotFoundException {
+    public Article getArticleById(Long id) throws ArticleNotFoundException {
         Optional<Article> articleOptional = articleRepository.findById(id);
         if (articleOptional.isPresent()) {
             return articleOptional.get();
         } else {
-            throw new FileNotFoundException();
+            throw new ArticleNotFoundException();
         }
     }
 
     public List<Article> getAllArticles() {
         return articleRepository.findAll();
-    }
-
-    public boolean createArticle(String title, String content) {
-        Article article = new Article();
-        article.setFilename(title.replaceAll(" ", "_"));
-        article.setTitle(title);
-        article.setContent(content.getBytes());
-        return saveArticle(article);
     }
 }

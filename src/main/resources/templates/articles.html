@@ -61,7 +61,11 @@
     <h2>Articles</h2>
     <div>
         <div th:each="article : ${articles}">
-            <a th:href="'/articles/' + ${article.getId()}"><h3 th:text="${article.getTitle()}" class="article_title"></h3></a>
+            <a th:href="'/articles/' + ${article.getId()}"><h3 th:text="${article.getTitle()}" class="article-title"></h3></a>
+            <div th:if="${isEditor}" class="article-action-buttons">
+                <a th:href="'/articles/edit/' + ${article.getId()}">Edit</a>
+                <a th:href="'/articles/delete/' + ${article.getId()}">Delete</a>
+            </div>
         </div>
     </div>
 </div>
