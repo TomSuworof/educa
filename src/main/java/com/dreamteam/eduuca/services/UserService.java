@@ -1,8 +1,8 @@
-package com.dreamteam.educa.services;
+package com.dreamteam.eduuca.services;
 
-import com.dreamteam.educa.entities.User;
-import com.dreamteam.educa.entities.Role;
-import com.dreamteam.educa.repositories.UserRepository;
+import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.Role;
+import com.dreamteam.eduuca.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;

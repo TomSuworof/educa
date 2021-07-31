@@ -1,10 +1,10 @@
-package com.dreamteam.educa;
+package com.dreamteam.eduuca;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EducaApplicationTests {
+class EduucaApplicationTests {
 
     @Test
     void contextLoads() {

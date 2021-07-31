@@ -1,6 +1,6 @@
-package com.dreamteam.educa.config;
+package com.dreamteam.eduuca.config;
 
-import com.dreamteam.educa.services.UserService;
+import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

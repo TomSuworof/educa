@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.dreamteam</groupId>
-    <artifactId>educa</artifactId>
+    <artifactId>eduuca</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>educa</name>
-    <description>educa</description>
+    <name>eduuca</name>
+    <description>eduuca</description>
     <properties>
         <java.version>16</java.version>
     </properties>

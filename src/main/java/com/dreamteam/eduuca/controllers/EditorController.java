@@ -1,6 +1,6 @@
-package com.dreamteam.educa.controllers;
+package com.dreamteam.eduuca.controllers;
 
-import com.dreamteam.educa.services.ArticleService;
+import com.dreamteam.eduuca.services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

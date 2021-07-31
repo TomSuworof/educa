@@ -1,7 +1,7 @@
-package com.dreamteam.educa.services;
+package com.dreamteam.eduuca.services;
 
-import com.dreamteam.educa.entities.Article;
-import com.dreamteam.educa.repositories.ArticleRepository;
+import com.dreamteam.eduuca.entities.Article;
+import com.dreamteam.eduuca.repositories.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

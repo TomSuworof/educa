@@ -1,9 +1,9 @@
-package com.dreamteam.educa.controllers;
+package com.dreamteam.eduuca.controllers;
 
-import com.dreamteam.educa.entities.User;
-import com.dreamteam.educa.services.UserService;
-import com.dreamteam.educa.entities.Article;
-import com.dreamteam.educa.services.ArticleService;
+import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.services.UserService;
+import com.dreamteam.eduuca.entities.Article;
+import com.dreamteam.eduuca.services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

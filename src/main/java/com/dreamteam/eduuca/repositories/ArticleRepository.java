@@ -1,6 +1,6 @@
-package com.dreamteam.educa.repositories;
+package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.educa.entities.Article;
+import com.dreamteam.eduuca.entities.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

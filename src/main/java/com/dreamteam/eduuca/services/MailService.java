@@ -1,4 +1,4 @@
-package com.dreamteam.educa.services;
+package com.dreamteam.eduuca.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

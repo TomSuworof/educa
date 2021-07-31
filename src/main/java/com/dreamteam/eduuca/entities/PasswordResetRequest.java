@@ -1,4 +1,4 @@
-package com.dreamteam.educa.entities;
+package com.dreamteam.eduuca.entities;
 
 import lombok.*;
 

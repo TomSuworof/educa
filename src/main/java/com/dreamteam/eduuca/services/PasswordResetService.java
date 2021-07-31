@@ -1,8 +1,8 @@
-package com.dreamteam.educa.services;
+package com.dreamteam.eduuca.services;
 
-import com.dreamteam.educa.entities.PasswordResetRequest;
-import com.dreamteam.educa.entities.User;
-import com.dreamteam.educa.repositories.PasswordResetRepository;
+import com.dreamteam.eduuca.entities.PasswordResetRequest;
+import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.repositories.PasswordResetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
