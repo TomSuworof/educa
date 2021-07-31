@@ -24,13 +24,17 @@ public class ArticlesController {
     private final ArticleService articleService;
 
     @GetMapping("/articles")
-    public String getArticles(Model model) {
+    public String getArticles(@RequestParam(required = false) String type, Model model) {
         try {
             User currentUser = userService.getUserFromContext();
-            model.addAttribute("isEditor", userService.isUser(currentUser, "editor"));
+            if (userService.isUser(currentUser, "article_editor")) {
+                model.addAttribute("isEditor", true);
+                model.addAttribute("articles", articleService.getArticlesByType(type));
+                return "articles";
+            }
         } catch (AnonymousUserException ignored) {
         }
-        model.addAttribute("articles", articleService.getAllArticles());
+        model.addAttribute("articles", articleService.getArticlesByType("published"));
         return "articles";
     }
 
@@ -40,6 +44,7 @@ public class ArticlesController {
             articleService.saveFile(title, loadedFile);
             return "redirect:/articles";
         } catch (IOException e) {
+            e.printStackTrace();
             model.addAttribute("error", "Error loading article");
             return "articles";
         }
@@ -59,28 +64,14 @@ public class ArticlesController {
         }
     }
 
-    @GetMapping("/articles/edit/{id}")
-    public String editArticle(@PathVariable Long id, Model model) {
-        try {
-            Article article = articleService.getArticleById(id);
-            return "redirect: /editor?" +
-                    "title=" + article.getTitle() +
-                    ";content=" + new String(article.getContent());
-        } catch (ArticleNotFoundException e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Cannot edit article");
-            return "articles";
-        }
-    }
-
     @GetMapping("/articles/delete/{id}")
     public String deleteArticle(@PathVariable Long id, Model model) {
         try {
             articleService.deleteArticle(id);
-            return "redirect: /articles";
+            return "redirect:/articles";
         } catch (ArticleNotFoundException e) {
             e.printStackTrace();
-            model.addAttribute("error", "Cannot edit article");
+            model.addAttribute("error", "Cannot delete article");
             return "articles";
         }
     }

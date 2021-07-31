@@ -1,6 +1,7 @@
 package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.Article;
+import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.exceptions.ArticleFoundException;
 import com.dreamteam.eduuca.exceptions.ArticleNotFoundException;
 import com.dreamteam.eduuca.exceptions.IllegalArticleExtensionException;
@@ -13,15 +14,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
-
-    private boolean titleExists(String title) {
-        return articleRepository.findArticleByTitle(title).isPresent();
-    }
 
     private boolean isMarkdown(MultipartFile file) {
         return Objects.requireNonNull(file.getOriginalFilename()).matches("(.*).md");
@@ -33,15 +31,26 @@ public class ArticleService {
         if (!isMarkdown(file)) {
             throw new IllegalArticleExtensionException();
         }
+        article.setState(ArticleState.ARTICLE_PUBLISHED);
         saveArticle(article);
     }
 
-    public void saveArticle(Article article) throws ArticleFoundException {
-        if (titleExists(article.getTitle())) {
-            throw new ArticleFoundException();
+    public void saveArticle(Article newArticle) throws ArticleFoundException {
+        newArticle.setId((long) newArticle.hashCode());
+
+        Optional<Article> oldArticleOpt = articleRepository.findArticleByTitleAndState(newArticle.getTitle(), newArticle.getState());
+
+        if (oldArticleOpt.isPresent()) {
+            Article oldArticle = oldArticleOpt.get();
+            if (newArticle.getState().equals(ArticleState.ARTICLE_IN_EDITING)) {
+                articleRepository.delete(oldArticle);
+                articleRepository.save(newArticle);
+            } else {
+                throw new ArticleFoundException();
+            }
+        } else {
+            articleRepository.save(newArticle);
         }
-        article.setId((long) article.hashCode());
-        articleRepository.save(article);
     }
 
     public void deleteArticle(Long articleId) throws ArticleNotFoundException {
@@ -59,6 +68,25 @@ public class ArticleService {
         } else {
             throw new ArticleNotFoundException();
         }
+    }
+
+    public List<Article> getArticlesByType(String articleType) {
+        if (articleType == null) {
+            return getAllArticles();
+        }
+
+        ArticleState state;
+        switch (articleType) {
+            case "published" -> state = ArticleState.ARTICLE_PUBLISHED;
+            case "drafts" -> state = ArticleState.ARTICLE_IN_EDITING;
+            default -> {
+                return getAllArticles();
+            }
+        }
+
+        return getAllArticles().stream()
+                .filter(article -> article.getState().equals(state))
+                .collect(Collectors.toList());
     }
 
     public List<Article> getAllArticles() {

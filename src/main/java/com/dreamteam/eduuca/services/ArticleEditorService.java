@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EditorService {
+public class ArticleEditorService {
     private final ArticleService articleService;
 
     public void loadArticle(String title, String content, String action) throws ArticleFoundException {

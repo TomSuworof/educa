@@ -36,7 +36,7 @@
 <!--    </div>-->
     <div class="header-add-file">
         <div th:if="${isEditor}" class="header-add-file-form">
-            <a href="/editor">Editor</a>
+            <a href="/article_editor">Editor</a>
             <br>
             <form action="/articles/load" method="post" enctype="multipart/form-data">
                 <div class="header-add-file-form-title">
@@ -60,10 +60,18 @@
 <div>
     <h2>Articles</h2>
     <div>
+        <div th:if="${isEditor}">
+            <div class="articles-types">
+                <a href="/articles">All</a>
+                <a href="/articles?type=published">Published</a>
+                <a href="/articles?type=drafts">Drafts</a>
+            </div>
+        </div>
         <div th:each="article : ${articles}">
             <a th:href="'/articles/' + ${article.getId()}"><h3 th:text="${article.getTitle()}" class="article-title"></h3></a>
             <div th:if="${isEditor}" class="article-action-buttons">
-                <a th:href="'/articles/edit/' + ${article.getId()}">Edit</a>
+                <p th:text="${article.getState()}"></p>
+                <a th:href="'/article_editor/' + ${article.getId()}">Edit</a>
                 <a th:href="'/articles/delete/' + ${article.getId()}">Delete</a>
             </div>
         </div>

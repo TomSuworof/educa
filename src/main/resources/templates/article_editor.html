@@ -8,7 +8,7 @@
     <script type="text/javascript" src="http://lab.lepture.com/editor/marked.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
-    <title>Article editor</title>
+    <title>Article article_editor</title>
 </head>
 <body>
 <div class="header-main-actions">
@@ -20,14 +20,16 @@
     <p th:text="${error}"></p>
 </div>
 <div class="editor-wrapper">
-    <form action="/editor/load">
-        <input class="title" type="text" placeholder="Title" name="title" th:value="${titleValue}"/>
-        <textarea id="editor" placeholder="Content here ..." name="content" th:value="${contentValue}"></textarea>
+    <form action="/article_editor/load">
+        <label>
+            <input class="title" type="text" placeholder="Title" name="title" th:value="${titleValue}" required/>
+        </label>
+        <textarea id="editor" placeholder="Content here ..." name="content" th:text="${contentValue}"></textarea>
         <input type="submit" name="action" th:value="Publish"/>
         <input type="submit" name="action" th:value="Save"/>
     </form>
 </div>
 
-<script type="text/javascript" src="/static/js/editor.js"></script>
+<script type="text/javascript" src="/static/js/article_editor.js"></script>
 </body>
 </html>
