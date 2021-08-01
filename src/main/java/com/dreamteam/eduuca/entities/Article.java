@@ -43,7 +43,8 @@ public class Article {
         this.content = file.getBytes();
     }
 
-    public File makeFile() {
+    @Deprecated
+    private File makeFile() {
         File file = new File(this.filename);
         try (OutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(this.content);
@@ -60,7 +61,8 @@ public class Article {
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
         // You can re-use parser and renderer instances
-        Node document = parser.parseReader(new FileReader(makeFile()));
+        Node document = parser.parse(new String(content));
+        System.out.println(renderer.render(document));
         return renderer.render(document);
     }
 

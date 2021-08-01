@@ -25,7 +25,7 @@ public class AdminController {
         try {
             switch (action) {
                 case "delete" -> userService.changeRole(userId, "blocked");
-                case "make_analyst" -> userService.changeRole(userId, "analyst");
+                case "make_editor" -> userService.changeRole(userId, "editor");
                 case "make_user" -> userService.changeRole(userId, "user");
             }
             return "redirect: /admin";

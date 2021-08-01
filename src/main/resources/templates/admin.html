@@ -39,11 +39,11 @@
                     <input type="hidden" name="action" value="delete"/>
                     <button type="submit" class="simple-red-button">Delete (block)</button>
                 </form>
-<!--                <form action="/admin" method="post">-->
-<!--                    <input type="hidden" name="userId" th:value="${user.getId()}"/>-->
-<!--                    <input type="hidden" name="action" value="make_analyst"/>-->
-<!--                    <button type="submit" class="simple-red-button">Make analyst</button>-->
-<!--                </form>-->
+                <form action="/admin" method="post">
+                    <input type="hidden" name="userId" th:value="${user.getId()}"/>
+                    <input type="hidden" name="action" value="make_editor"/>
+                    <button type="submit" class="simple-red-button">Make editor</button>
+                </form>
                 <form action="/admin" method="post">
                     <input type="hidden" name="userId" th:value="${user.getId()}"/>
                     <input type="hidden" name="action" value="make_user"/>

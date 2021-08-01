@@ -13,7 +13,7 @@ public class ArticleEditorService {
 
     public void loadArticle(String title, String content, String action) throws ArticleFoundException {
         Article article = new Article();
-        article.setFilename(title.replaceAll(" ", "_"));
+        article.setFilename(title.replaceAll(" ", "_") + ".md");
         article.setTitle(title);
         article.setContent(content.getBytes());
         article.setState(switch (action) {

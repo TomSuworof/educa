@@ -1,5 +1,6 @@
 package com.dreamteam.eduuca.controllers;
 
+import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.exceptions.AnonymousUserException;
 import com.dreamteam.eduuca.exceptions.ArticleNotFoundException;
@@ -27,7 +28,7 @@ public class ArticlesController {
     public String getArticles(@RequestParam(required = false) String type, Model model) {
         try {
             User currentUser = userService.getUserFromContext();
-            if (userService.isUser(currentUser, "article_editor")) {
+            if (userService.isUser(currentUser, "editor")) {
                 model.addAttribute("isEditor", true);
                 model.addAttribute("articles", articleService.getArticlesByType(type));
                 return "articles";
@@ -54,6 +55,14 @@ public class ArticlesController {
     public String deleteFile(@PathVariable Long id, Model model) {
         try {
             Article article = articleService.getArticleById(id);
+
+            if (article.getState().equals(ArticleState.ARTICLE_IN_EDITING)) {
+                User currentUser = userService.getUserFromContext();
+                if (userService.isUser(currentUser, "editor")) {
+                    throw new ArticleNotFoundException();
+                }
+            }
+
             model.addAttribute("title", article.getTitle());
             model.addAttribute("content", article.makeHTML());
             return "article";

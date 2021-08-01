@@ -92,7 +92,7 @@ public class UserService implements UserDetailsService {
         User userFromDB = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         switch (role) {
-            case "article_editor" -> userFromDB.setRoles(Collections.singleton(new Role(2L, "ROLE_EDITOR")));
+            case "editor" -> userFromDB.setRoles(Collections.singleton(new Role(2L, "ROLE_EDITOR")));
             case "user" -> userFromDB.setRoles(Collections.singleton(new Role(3L, "ROLE_USER")));
             case "blocked" -> userFromDB.setRoles(Collections.singleton(new Role(0L, "ROLE_BLOCKED")));
         }
@@ -115,7 +115,7 @@ public class UserService implements UserDetailsService {
             return false;
         } else if (role.equals("admin") && user.getRoles().contains(new Role((long) 1, "ROLE_ADMIN"))) {
             return true;
-        } else if (role.equals("article_editor") && user.getRoles().contains(new Role((long) 2, "ROLE_EDITOR"))) {
+        } else if (role.equals("editor") && user.getRoles().contains(new Role((long) 2, "ROLE_EDITOR"))) {
             return true;
         } else if (role.equals("user") && user.getRoles().contains(new Role((long) 3, "ROLE_USER"))) {
             return true;
