@@ -1,128 +1,153 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.entities.Role;
-import com.dreamteam.eduuca.exceptions.AnonymousUserException;
-import com.dreamteam.eduuca.exceptions.UserFoundException;
-import com.dreamteam.eduuca.exceptions.UserNotFoundException;
+import com.dreamteam.eduuca.entities.RoleEnum;
+import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.payload.request.SignupRequest;
+import com.dreamteam.eduuca.payload.request.UserDataRequest;
+import com.dreamteam.eduuca.payload.response.PageResponseDTO;
+import com.dreamteam.eduuca.payload.response.UserDTO;
 import com.dreamteam.eduuca.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
-        UserDetails userFromDB = userRepository.findByUsername(username);
-        if (userFromDB == null) {
-            throw new UserNotFoundException();
-        }
-        return userFromDB;
+    public User loadUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(IllegalArgumentException::new);
     }
 
-    public User getUserFromContext() throws AnonymousUserException {
-        Object currentUserDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUserDetails.equals("anonymousUser")) {
-            throw new AnonymousUserException();
-        } else {
-            return (User) currentUserDetails;
-        }
+    public User loadUserById(UUID id) {
+        return userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
-    public void saveUser(User user)  throws UserFoundException {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
+    public User getUserFromAuthentication(Authentication authentication) {
+        if (authentication == null) {
+            throw new IllegalStateException();
+        }
+        return loadUserByUsername(authentication.getName());
+    }
 
-        if (userFromDB != null) {
-            throw new UserFoundException();
+    public UserDTO saveUser(SignupRequest signupRequest) {
+        if (existsByUsername(signupRequest.getUsername())) {
+            throw new IllegalArgumentException();
         }
 
-        user.setId((long) user.hashCode());
-        user.setRoles(Set.of(new Role(3L, "ROLE_USER")));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (existsByEmail(signupRequest.getEmail())) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = new User();
+        user.setUsername(signupRequest.getUsername());
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setRoles(Set.of(RoleEnum.USER.getAsObject()));
         userRepository.save(user);
+
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            try {
+//                mailService.sendRegistrationConfirm(user.getEmail(), user.getUsername());
+//            } catch (EmailException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+
+        return new UserDTO(user);
     }
 
-    public void updateUser(User userFromForm, boolean passwordWasChanged) throws UserNotFoundException {
-        User userFromDB = userRepository.findById(userFromForm.getId()).orElseThrow(UserNotFoundException::new);
+    private boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
-        deleteUser(userFromForm.getId());
+    private boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
-        userFromDB.setEmail(userFromForm.getEmail());
+    public UserDTO updateUser(UUID userId, UserDataRequest userData) {
+        User userFromDB = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
 
-        if (passwordWasChanged) {
-            updateWithPassword(userFromDB, userFromForm.getPasswordNew());
-        } else {
-            updateWithoutPassword(userFromDB);
+        if (userData.getAvatar().isPresent()) {
+            userFromDB.setAvatar(userData.getAvatar().get());
         }
+
+        if (userData.getEmail().isPresent()) {
+            userFromDB.setEmail(userData.getEmail().get());
+        }
+
+        if (userData.getBio().isPresent()) {
+            userFromDB.setBio(userData.getBio().get());
+        }
+
+        if (userData.getPassword().isPresent()) {
+            userFromDB.setPassword(passwordEncoder.encode(userData.getPassword().get()));
+        }
+
+        userRepository.save(userFromDB);
+        return new UserDTO(userFromDB);
     }
 
-    private void updateWithPassword(User userUpdated, String passwordNew) {
-        userUpdated.setPassword(passwordEncoder.encode(passwordNew));
-        userRepository.save(userUpdated);
-    }
-
-    private void updateWithoutPassword(User userUpdated) {
-        userRepository.save(userUpdated);
-    }
-
-    private void deleteUser(Long userId) throws UserNotFoundException {
+    @Deprecated
+    // should be cascaded
+    private void deleteUser(UUID userId) {
         if (userRepository.findById(userId).isPresent()) {
             userRepository.deleteById(userId);
         } else {
-            throw new UserNotFoundException();
+            throw new IllegalArgumentException();
         }
     }
 
-    public void changeRole(Long userId, String role) throws UserNotFoundException {
-        User userFromDB = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public UserDTO changeRole(UUID userId, Role role) {
+        User userFromDB = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
 
-        switch (role) {
-            case "editor" -> userFromDB.setRoles(Collections.singleton(new Role(2L, "ROLE_EDITOR")));
-            case "user" -> userFromDB.setRoles(Collections.singleton(new Role(3L, "ROLE_USER")));
-            case "blocked" -> userFromDB.setRoles(Collections.singleton(new Role(0L, "ROLE_BLOCKED")));
-        }
-//        mailService.send(userFromDB.getEmail(), "role_change", role);
+        userFromDB.setRoles(new HashSet<>(Collections.singletonList(role)));
+
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            try {
+//                mailService.sendRoleChanged(userFromDB.getEmail(), role.getName());
+//            } catch (EmailException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+
         userRepository.save(userFromDB);
+        return new UserDTO(userFromDB);
     }
 
-    public boolean isCurrentPasswordSameAs(String passwordAnother) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String currentUserPassword = currentUser.getPassword();
-        return passwordEncoder.matches(passwordAnother, currentUserPassword);
+    public boolean isCurrentPasswordSameAs(UUID requiredUserId, String passwordAnother) {
+        User requiredUser = this.loadUserById(requiredUserId);
+        String requiredUserPassword = requiredUser.getPassword();
+        return passwordEncoder.matches(passwordAnother, requiredUserPassword);
     }
 
+    @Deprecated
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public boolean isUser(User user, String role) {
-        if (user == null) {
-            return false;
-        } else if (role.equals("admin") && user.getRoles().contains(new Role((long) 1, "ROLE_ADMIN"))) {
-            return true;
-        } else if (role.equals("editor") && user.getRoles().contains(new Role((long) 2, "ROLE_EDITOR"))) {
-            return true;
-        } else if (role.equals("user") && user.getRoles().contains(new Role((long) 3, "ROLE_USER"))) {
-            return true;
-        } else if (role.equals("blocked") && user.getRoles().contains(new Role((long) 0, "ROLE_BLOCKED"))) {
-            return true;
-        } else {
-            return false;
-        }
+
+    public PageResponseDTO<UserDTO> getUsersPaginated(Integer limit, Integer offset) {
+        Page<User> users = getAllUsersPaginated(limit, offset);
+
+        return new PageResponseDTO<>(
+                offset > 0 && users.getTotalElements() > 0,
+                (offset + limit) < users.getTotalElements(),
+                users.stream().map(UserDTO::new).toList(),
+                users.getTotalElements());
+    }
+
+    private Page<User> getAllUsersPaginated(Integer limit, Integer offset) {
+        return userRepository.findAll(PageRequest.of(offset / limit, limit));
     }
 }

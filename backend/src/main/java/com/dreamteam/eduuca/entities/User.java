@@ -1,48 +1,48 @@
 package com.dreamteam.eduuca.entities;
 
 import lombok.*;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "t_user")
 public class User implements UserDetails {
-
     @Id
-    private Long id;
+    @NotNull
+    @GeneratedValue
+    private UUID id;
 
-    @Column
+    @NotBlank
+    @Field(type = FieldType.Text)
     private String username;
 
-    @Column
+    @NotBlank
+    @Email
     private String email;
 
-    @Column
-    private String secretQuestion;
+    @Size
+    private String bio;
 
-    @Column
-    private String secretAnswer;
-
-    @Column
+    @NotBlank
     private String password;
 
-    @Transient
-    private String passwordConfirm;
-
-    @Transient
-    private String passwordNew;
-
-    @Transient
-    private String passwordNewConfirm;
-
+    @NotEmpty
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    @org.springframework.data.annotation.Transient
+    private String avatar;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -56,7 +56,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !roles.contains(new Role(0L, "ROLE_BLOCKED"));
+        return !roles.contains(RoleEnum.BLOCKED.getAsObject());
     }
 
     @Override
@@ -80,5 +80,9 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(username, email);
+    }
+
+    public boolean is(RoleEnum role) {
+        return this.getRoles().contains(role.getAsObject());
     }
 }

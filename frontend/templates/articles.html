@@ -67,12 +67,12 @@
                 <a href="/articles?type=drafts">Drafts</a>
             </div>
         </div>
-        <div th:each="article : ${articles}">
-            <a th:href="'/articles/' + ${article.getId()}"><h3 th:text="${article.getTitle()}" class="article-title"></h3></a>
-            <div th:if="${isEditor}" class="article-action-buttons">
-                <p th:text="${article.getState()}"></p>
-                <a th:href="'/article_editor/' + ${article.getId()}">Edit</a>
-                <a th:href="'/articles/delete/' + ${article.getId()}">Delete</a>
+        <div th:each="exercise : ${articles}">
+            <a th:href="'/articles/' + ${exercise.getId()}"><h3 th:text="${exercise.getTitle()}" class="exercise-title"></h3></a>
+            <div th:if="${isEditor}" class="exercise-action-buttons">
+                <p th:text="${exercise.getState()}"></p>
+                <a th:href="'/article_editor/' + ${exercise.getId()}">Edit</a>
+                <a th:href="'/articles/delete/' + ${exercise.getId()}">Delete</a>
             </div>
         </div>
     </div>

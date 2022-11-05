@@ -5,63 +5,61 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig implements WebMvcConfigurer {
+    private final UserService userService;
+    private final AuthEntryPointJwt unauthorizedHandler;
+    private final AuthTokenFilter authTokenFilter;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    UserService userService;
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+    }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf()
-                .disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .httpBasic()
+                .and()
                 .authorizeRequests()
-                // Доступ только для не зарегистрированных пользователей
-                .antMatchers("/registration").not().fullyAuthenticated()
-                .antMatchers("/password_reset/**").not().fullyAuthenticated()
-                // Доступ только для пользователей с ролью Администратор
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                // Доступ только для пользователей с ролью Редактор
-                .antMatchers("/article_editor/**").hasRole("EDITOR")
-                // Доступ для зарегистрированных пользователей (USER, ANALYST, ADMIN)
-                .antMatchers("/personal_area/**").fullyAuthenticated()
-                .antMatchers("/articles/**").permitAll()
-                // Доступ разрешен всем пользователей
-                .antMatchers("/",
-                        "/favicon.ico",
-                        "/terms_of_use",
-                        "/frontend/static/**").permitAll()
-                //Все остальные страницы требуют аутентификации
-                .anyRequest().authenticated()
+                .antMatchers("/api/articles/**",
+                        "/api/auth/**",
+                        "/api/authors/**",
+                        "/api/avatars/**",
+                        "/api/bookmarks/**",
+                        "/api/comments/**",
+                        "/api/search/**",
+                        "/api/tags/**").permitAll()
+                .antMatchers("/api/users/**").authenticated()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/exercises/**").permitAll()
                 .and()
-                // Настройка для входа в систему
-                .formLogin()
-                .loginPage("/login")
-                // Перенаправление на главную страницу после успешного входа
-                .defaultSuccessUrl("/")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .logoutSuccessUrl("/");
-    }
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
-    @Autowired
-    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        httpSecurity.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
     }
 }
