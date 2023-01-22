@@ -31,6 +31,7 @@ create table if not exists t_exercise
 (
     id               uuid                     not null constraint t_exercise_pkey primary key,
     title            varchar(255)             not null,
+    custom_url       varchar(255)             not null,
     content          text                     not null,
     solution         text                     not null,
     publication_date timestamp with time zone not null,

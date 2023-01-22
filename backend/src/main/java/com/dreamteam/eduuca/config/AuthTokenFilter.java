@@ -4,6 +4,7 @@ import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
-    private static final String CANNOT_AUTH_USER = "Cannot set user authentication: {}";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
@@ -35,20 +36,24 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                log.trace("doFilterInternal(). Parsed username: {}", username);
 
                 User user = userService.loadUserByUsername(username);
+                log.trace("doFilterInternal(). Parsed user: {}", () -> user);
 
                 if (!user.isAccountNonLocked()) {
+                    log.warn("doFilterInternal(). User account is locked. Will throw exception");
                     throw new IllegalAccessError(username);
                 }
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                log.trace("doFilterInternal(). Result authentication: {}", () -> authentication);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error(CANNOT_AUTH_USER, e);
+            log.error("Cannot set user authentication", e);
         }
 
         chain.doFilter(request, response);

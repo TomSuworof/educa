@@ -3,10 +3,16 @@ package com.dreamteam.eduuca.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
@@ -16,6 +22,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "t_exercise")
 @NoArgsConstructor
 public class Exercise {
@@ -34,11 +41,13 @@ public class Exercise {
     @Size(min = 1)
     @Column(columnDefinition = "text")
     @Field(type = FieldType.Text)
+    @ToString.Exclude
     private String content;
 
     @Size(min = 1)
     @Column(columnDefinition = "text")
     @Field(type = FieldType.Text)
+    @ToString.Exclude
     private String solution;
 
     @PastOrPresent
@@ -55,6 +64,7 @@ public class Exercise {
         Exercise exercise = (Exercise) o;
         return Objects.equals(id, exercise.getId()) &&
                 Objects.equals(title, exercise.getTitle()) &&
+                Objects.equals(customUrl, exercise.getCustomUrl()) &&
                 Objects.equals(content, exercise.getContent()) &&
                 Objects.equals(solution, exercise.getSolution()) &&
                 Objects.equals(state, exercise.getState());
@@ -62,6 +72,6 @@ public class Exercise {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, content, solution, state);
+        return Objects.hash(id, title, customUrl, content, solution, state);
     }
 }
