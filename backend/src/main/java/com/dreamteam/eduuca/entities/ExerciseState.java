@@ -20,7 +20,7 @@ public enum ExerciseState {
                 return state;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalArgumentException();
     }
 
     public static ExerciseState getFromDescription(String description) {
@@ -29,6 +29,6 @@ public enum ExerciseState {
                 return state;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalArgumentException();
     }
 }

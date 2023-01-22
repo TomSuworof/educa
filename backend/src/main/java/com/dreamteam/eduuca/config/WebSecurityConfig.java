@@ -37,29 +37,22 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+        return httpSecurity
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/articles/**",
+                .antMatchers("/api/exercises/**",
                         "/api/auth/**",
-                        "/api/authors/**",
-                        "/api/avatars/**",
-                        "/api/bookmarks/**",
-                        "/api/comments/**",
                         "/api/search/**",
-                        "/api/tags/**").permitAll()
+                        "/swagger-ui**").permitAll()
                 .antMatchers("/api/users/**").authenticated()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/exercises/**").permitAll()
                 .and()
-                .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
-
-        httpSecurity.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return httpSecurity.build();
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .build();
     }
 }

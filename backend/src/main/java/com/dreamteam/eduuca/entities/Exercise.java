@@ -24,7 +24,12 @@ public class Exercise {
     private UUID id;
 
     @Column
+    @Size(min = 1)
+    @Field(type = FieldType.Text)
     private String title;
+
+    @Column
+    private String customUrl;
 
     @Size(min = 1)
     @Column(columnDefinition = "text")

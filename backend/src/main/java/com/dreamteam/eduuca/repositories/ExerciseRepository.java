@@ -14,5 +14,7 @@ import java.util.UUID;
 public interface ExerciseRepository extends JpaRepository<Exercise, UUID> {
     Optional<Exercise> findByTitle(String title);
 
+    Optional<Exercise> findByCustomUrl(String customUrl);
+
     Page<Exercise> findExercisesByState(ExerciseState state, Pageable pageable);
 }

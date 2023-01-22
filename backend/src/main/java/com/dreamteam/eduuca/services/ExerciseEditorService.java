@@ -12,16 +12,22 @@ import org.springframework.stereotype.Service;
 public class ExerciseEditorService {
     private final ExerciseService exerciseService;
 
-    public ExerciseDTO loadExercise(ExerciseUploadRequest exerciseUploadRequest, String action) {
+    public ExerciseDTO uploadExercise(ExerciseUploadRequest exerciseUploadRequest, ExerciseState exerciseState) {
         Exercise exercise = new Exercise();
+
+        if (exerciseUploadRequest.getId() != null) {
+            exercise.setId(exerciseUploadRequest.getId());
+        }
+
+        if (exerciseUploadRequest.getCustomUrl() == null) {
+            exerciseUploadRequest.setCustomUrl(exerciseUploadRequest.getTitle());
+        }
+
         exercise.setTitle(exerciseUploadRequest.getTitle());
+        exercise.setCustomUrl(exerciseUploadRequest.getCustomUrl());
         exercise.setContent(exerciseUploadRequest.getContent());
         exercise.setSolution(exerciseUploadRequest.getSolution());
-        exercise.setState(switch (action) {
-            case "Publish" -> ExerciseState.PUBLISHED;
-            case "Save" -> ExerciseState.IN_EDITING;
-            default -> throw new IllegalArgumentException();
-        });
+        exercise.setState(exerciseState);
         exerciseService.saveExercise(exercise);
         return new ExerciseDTO(exercise);
     }

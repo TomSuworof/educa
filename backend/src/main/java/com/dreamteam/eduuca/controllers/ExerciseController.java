@@ -17,14 +17,17 @@ import java.util.UUID;
 
 //@CrossOrigin(origins = "*")
 @Controller
-@RequestMapping("/api/articles")
+@RequestMapping("/api/exercises")
 @RequiredArgsConstructor
 public class ExerciseController {
     private final ExerciseService exerciseService;
     private final ExerciseEditorService exerciseEditorService;
 
-    @GetMapping("/")
-    public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(@RequestParam Integer limit, @RequestParam Integer offset) {
+    @GetMapping("/get")
+    @ResponseBody
+    public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "0") Integer offset) {
         PageResponseDTO<ExerciseDTO> response = exerciseService.getPageWithExercisesByState(ExerciseState.PUBLISHED, limit, offset);
 
         if (!response.isHasBefore() && !response.isHasAfter()) {
@@ -35,6 +38,8 @@ public class ExerciseController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
     public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id) {
         Exercise exercise = exerciseService.getExerciseById(id);
 
@@ -42,9 +47,11 @@ public class ExerciseController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ExerciseDTO> publishExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action) {
-        ExerciseDTO exerciseDTO = exerciseEditorService.loadExercise(exercise, action);
-        return ResponseEntity.ok().body(exerciseDTO);
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action) {
+        ExerciseDTO exerciseDTO = exerciseEditorService.uploadExercise(exercise, ExerciseState.getFromAction(action));
+        return ResponseEntity.status(HttpStatus.CREATED).body(exerciseDTO);
     }
 
     @DeleteMapping("/{id}")

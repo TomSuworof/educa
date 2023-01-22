@@ -2,6 +2,8 @@ package com.dreamteam.eduuca.config;
 
 import com.dreamteam.eduuca.entities.User;
 import io.jsonwebtoken.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -51,4 +53,16 @@ public class JwtUtils {
 
         return false;
     }
+}
+
+@Getter
+@AllArgsConstructor
+enum JWTError {
+    INVALID_SIGNATURE("Invalid JWT signature: {}"),
+    INVALID_TOKEN("Invalid JWT token: {}"),
+    TOKEN_IS_EXPIRED("JWT token is expired: {}"),
+    TOKEN_IS_UNSUPPORTED("JWT token is unsupported: {}"),
+    TOKEN_IS_EMPTY("JWT claims string is empty: {}");
+
+    private final String message;
 }
