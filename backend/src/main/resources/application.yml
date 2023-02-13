@@ -31,7 +31,7 @@ spring:
 
 springdoc:
   swagger-ui:
-    path: '/swagger-ui/index.html'
+    path: '/'
   packages-to-scan: com.dreamteam.eduuca.controllers
 
 logging:

@@ -51,8 +51,8 @@ create table if not exists t_tag
     name varchar(255) not null
 );
 
-create table if not exists t_articles_tags
+create table if not exists t_exercises_tags
 (
-    article_id uuid not null constraint references_to_not_null_article_id references t_exercise,
+    exercise_id uuid not null constraint references_to_not_null_exercise_id references t_exercise,
     tag_id    uuid  not null constraint references_to_not_null_tag_is references t_tag
 );
