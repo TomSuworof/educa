@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class AdminController {
     private final UserService userService;
 
     @GetMapping("/users")
+    @ResponseBody
     public ResponseEntity<PageResponseDTO<UserDTO>> getUsersPaginated(
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer offset
@@ -46,6 +48,7 @@ public class AdminController {
     }
 
     @PostMapping("/edit_user")
+    @ResponseBody
     public ResponseEntity<UserDTO> changeRole(@RequestParam String action, @RequestParam UUID id) {
         log.debug("changeRole() called. Action: {}, ID: {}", action, id);
         UserDTO user = userService.changeRole(id, RoleEnum.getFromAction(action).getAsObject());
@@ -54,6 +57,7 @@ public class AdminController {
     }
 
     @GetMapping("/exercises")
+    @ResponseBody
     public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(
             @RequestParam(required = false, defaultValue = "all") String state,
             @RequestParam(required = false, defaultValue = "10") Integer limit,

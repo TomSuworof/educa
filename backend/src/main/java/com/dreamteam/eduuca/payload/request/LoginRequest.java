@@ -7,8 +7,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class SignupRequest {
+public class LoginRequest {
     private String username;
-    private String email;
-    @ToString.Exclude private String password;
+    @ToString.Exclude
+    private String password;
 }
