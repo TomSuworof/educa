@@ -7,6 +7,7 @@ import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.services.ExerciseEditorService;
 import com.dreamteam.eduuca.services.ExerciseService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,7 @@ public class ExerciseController {
         }
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -61,6 +63,7 @@ public class ExerciseController {
         return ResponseEntity.ok().body(new ExerciseDTO(exercise));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -71,6 +74,7 @@ public class ExerciseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(exerciseDTO);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody

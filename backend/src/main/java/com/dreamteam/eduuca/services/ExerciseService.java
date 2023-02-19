@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,9 +56,10 @@ public class ExerciseService {
             throw new IllegalStateException(String.format("Exercise with this URL %s already exists", newExercise.getCustomUrl()));
         }
 
+        newExercise.setPublicationDate(OffsetDateTime.now());
+
         log.trace("createDraft(). Exercise to save: {}", () -> newExercise);
         exerciseRepository.save(newExercise);
-//        exerciseSearchRepository.save(newExercise);
         log.trace("createDraft(). Exercise successfully saved: {}", () -> newExercise);
     }
 
@@ -65,11 +67,9 @@ public class ExerciseService {
         log.debug("editDraft() called. New exercise: {}, old exercise: {}", () -> newExercise, () -> oldExercise);
 
         exerciseRepository.delete(oldExercise);
-//        exerciseSearchRepository.delete(oldExercise);
         log.trace("editDraft(). Old exercise successfully deleted: {}", () -> oldExercise);
 
         exerciseRepository.save(newExercise);
-//        exerciseSearchRepository.save(newExercise);
         log.trace("editDraft(). Exercise successfully saved: {}", () -> newExercise);
     }
 
@@ -106,11 +106,9 @@ public class ExerciseService {
         newExercise.setPublicationDate(oldExercise.getPublicationDate());
 
         exerciseRepository.delete(oldExercise);
-//        exerciseSearchRepository.delete(oldExercise);
         log.trace("editPublished(). Old exercise successfully deleted: {}", () -> oldExercise);
 
         exerciseRepository.save(newExercise);
-//        exerciseSearchRepository.save(newExercise);
         log.trace("editPublished(). Exercise successfully saved: {}", () -> newExercise);
     }
 

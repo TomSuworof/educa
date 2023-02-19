@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,9 @@ public class ExerciseEditorService {
         if (exerciseUploadRequest.getId() != null) {
             log.trace("uploadExercise(). Exercise upload request contains ID={}, setting this ID to new Exercise", exerciseUploadRequest.getId());
             exercise.setId(exerciseUploadRequest.getId());
+        } else {
+            log.trace("uploadExercise(). Exercise upload request does not contains ID, setting new random");
+            exercise.setId(UUID.randomUUID());
         }
 
         if (exerciseUploadRequest.getCustomUrl() == null) {

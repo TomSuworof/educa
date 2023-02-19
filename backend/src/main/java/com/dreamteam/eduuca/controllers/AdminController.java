@@ -7,6 +7,7 @@ import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.UserDTO;
 import com.dreamteam.eduuca.services.ExerciseService;
 import com.dreamteam.eduuca.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.UUID;
 
 @Log4j2
+@SecurityRequirement(name = "Bearer Authentication")
 @Controller
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor

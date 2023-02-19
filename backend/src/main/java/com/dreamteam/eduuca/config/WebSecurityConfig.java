@@ -53,6 +53,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
+                .csrf().disable()
                 .build();
     }
 }
