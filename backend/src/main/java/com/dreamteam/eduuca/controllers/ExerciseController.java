@@ -33,7 +33,7 @@ public class ExerciseController {
     private final ExerciseService exerciseService;
     private final ExerciseEditorService exerciseEditorService;
 
-    @GetMapping("/get")
+    @GetMapping("")
     @ResponseBody
     public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(
             @RequestParam(required = false, defaultValue = "10") Integer limit,
@@ -64,7 +64,7 @@ public class ExerciseController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping("/")
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action) {

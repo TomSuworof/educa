@@ -66,6 +66,8 @@ public class ExerciseService {
     private void editDraft(Exercise newExercise, Exercise oldExercise) {
         log.debug("editDraft() called. New exercise: {}, old exercise: {}", () -> newExercise, () -> oldExercise);
 
+        newExercise.setPublicationDate(OffsetDateTime.now());
+
         exerciseRepository.delete(oldExercise);
         log.trace("editDraft(). Old exercise successfully deleted: {}", () -> oldExercise);
 
@@ -94,9 +96,10 @@ public class ExerciseService {
             throw new IllegalStateException(String.format("Exercise with this URL %s already exists", newExercise.getCustomUrl()));
         }
 
+        newExercise.setPublicationDate(OffsetDateTime.now());
+
         log.trace("createPublished(). Exercise to save: {}", () -> newExercise);
         exerciseRepository.save(newExercise);
-//        exerciseSearchRepository.save(newExercise);
         log.trace("createPublished(). Exercise successfully saved: {}", () -> newExercise);
     }
 
