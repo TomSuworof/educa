@@ -54,7 +54,7 @@ public class ExerciseController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id) {
         log.debug("getExercise() called. ID to search: {}", id);

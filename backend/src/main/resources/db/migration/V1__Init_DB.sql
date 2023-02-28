@@ -14,7 +14,8 @@ create table if not exists t_role
 insert into t_role (id, name) values
     (0, 'ROLE_BLOCKED'),
     (1, 'ROLE_ADMIN'),
-    (2, 'ROLE_USER')
+    (2, 'ROLE_USER'),
+    (3, 'ROLE_MODERATOR')
 on conflict(id) do update set id = excluded.id, name = excluded.name;
 
 create table if not exists t_user
@@ -33,9 +34,18 @@ create table if not exists t_exercise
     title            varchar(255)             not null,
     custom_url       varchar(255)             not null,
     content          text                     not null,
-    solution         text                     not null,
+    question         text                     not null,
     publication_date timestamp with time zone not null,
     state            integer                  not null
+);
+
+create table if not exists t_question
+(
+    id          uuid          not null constraint t_question_pk primary key,
+    answer      varchar(255),
+    hint        varchar(255),
+    remark      varchar(255),
+    exercise_id uuid          not null constraint references_to_null_exercise_id references t_exercise not null
 );
 
 create table if not exists t_users_roles
@@ -54,5 +64,5 @@ create table if not exists t_tag
 create table if not exists t_exercises_tags
 (
     exercise_id uuid not null constraint references_to_not_null_exercise_id references t_exercise,
-    tag_id    uuid  not null constraint references_to_not_null_tag_is references t_tag
+    tag_id      uuid not null constraint references_to_not_null_tag_is references t_tag
 );

@@ -10,7 +10,8 @@ import lombok.ToString;
 public enum RoleEnum {
     BLOCKED("delete", "blocked", new Role(0L, "ROLE_BLOCKED")),
     ADMIN("make_admin", "admin", new Role(1L, "ROLE_ADMIN")),
-    USER("make_user", "user", new Role(2L, "ROLE_USER"));
+    USER("make_user", "user", new Role(2L, "ROLE_USER")),
+    MODERATOR("make_moderator", "moderator", new Role(3L, "ROLE_MODERATOR"));
 
     private final String actionForThisRole;
     private final String description;
