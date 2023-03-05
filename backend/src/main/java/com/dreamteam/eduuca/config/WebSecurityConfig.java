@@ -48,8 +48,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         "/api/auth/**",
                         "/api/search/**",
                         "/swagger-ui**").permitAll()
-                .antMatchers("/api/users/**").authenticated()
-                .antMatchers("/api/questions/**").hasRole("MODERATOR")
+                .antMatchers("/api/users/**", "/api/questions/**").authenticated()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)

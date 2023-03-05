@@ -2,6 +2,7 @@ package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.Exercise;
 import com.dreamteam.eduuca.entities.ExerciseState;
+import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.repositories.ExerciseRepository;
@@ -11,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,9 +24,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ExerciseService {
+    private final UserService userService;
     private final ExerciseRepository exerciseRepository;
 
-    public void saveExercise(Exercise exercise) {
+    public void saveExercise(@NotNull Exercise exercise) {
         log.debug("saveExercise() called. Exercise: {}", () -> exercise);
 
         switch (exercise.getState()) {
@@ -36,7 +40,7 @@ public class ExerciseService {
         }
     }
 
-    private void saveDraft(Exercise newExercise) {
+    private void saveDraft(@NotNull Exercise newExercise) {
         log.debug("saveDraft() called. New exercise: {}", () -> newExercise);
         Optional<Exercise> oldExerciseOpt = exerciseRepository.findById(newExercise.getId());
 
@@ -49,7 +53,7 @@ public class ExerciseService {
         }
     }
 
-    private void createDraft(Exercise newExercise) {
+    private void createDraft(@NotNull Exercise newExercise) {
         log.debug("createDraft() called. New exercise: {}", () -> newExercise);
         if (exerciseRepository.findByCustomUrl(newExercise.getCustomUrl()).isPresent()) {
             log.warn("createDraft(). Exercise with same URL '{}' already exists. Will throw exception", newExercise.getCustomUrl());
@@ -63,8 +67,12 @@ public class ExerciseService {
         log.trace("createDraft(). Exercise successfully saved: {}", () -> newExercise);
     }
 
-    private void editDraft(Exercise newExercise, Exercise oldExercise) {
+    private void editDraft(@NotNull Exercise newExercise, @NotNull Exercise oldExercise) {
         log.debug("editDraft() called. New exercise: {}, old exercise: {}", () -> newExercise, () -> oldExercise);
+
+        if (newExercise.getAuthor().equals(oldExercise.getAuthor())) {
+            throw new SecurityException();
+        }
 
         newExercise.setPublicationDate(OffsetDateTime.now());
 
@@ -75,7 +83,7 @@ public class ExerciseService {
         log.trace("editDraft(). Exercise successfully saved: {}", () -> newExercise);
     }
 
-    private void savePublished(Exercise newExercise) {
+    private void savePublished(@NotNull Exercise newExercise) {
         log.debug("savePublished() called. New exercise: {}", () -> newExercise);
 
         Optional<Exercise> oldExerciseOpt = exerciseRepository.findById(newExercise.getId());
@@ -89,7 +97,7 @@ public class ExerciseService {
         }
     }
 
-    private void createPublished(Exercise newExercise) {
+    private void createPublished(@NotNull Exercise newExercise) {
         log.debug("createPublished() called. Ne exercise: {}", () -> newExercise);
         if (exerciseRepository.findByCustomUrl(newExercise.getCustomUrl()).isPresent()) {
             log.warn("createPublished(). Exercise with same URL '{}' already exists. Will throw exception", newExercise.getCustomUrl());
@@ -103,8 +111,12 @@ public class ExerciseService {
         log.trace("createPublished(). Exercise successfully saved: {}", () -> newExercise);
     }
 
-    private void editPublished(Exercise newExercise, Exercise oldExercise) {
+    private void editPublished(@NotNull Exercise newExercise, @NotNull Exercise oldExercise) {
         log.debug("editPublished() called. New exercise: {}, old exercise: {}", () -> newExercise, () -> oldExercise);
+
+        if (!newExercise.getAuthor().equals(oldExercise.getAuthor())) {
+            throw new SecurityException();
+        }
 
         newExercise.setPublicationDate(oldExercise.getPublicationDate());
 
@@ -116,29 +128,32 @@ public class ExerciseService {
     }
 
 
-    public void deleteExerciseById(UUID id) {
+    public void deleteExerciseById(@NotNull UUID id, @NotNull Authentication auth) {
         log.debug("deleteExerciseById() called. ID={}", id);
-        if (exerciseRepository.findById(id).isPresent()) {
-            log.trace("deleteExerciseById(). Exercise with ID={} exists, going to delete", id);
-            exerciseRepository.deleteById(id);
-            log.trace("deleteExerciseById(). Exercise with ID={} successfully deleted", id);
-        } else {
-            log.warn("deleteExerciseById(). Exercise with ID={} does not exist. Will throw exception", id);
-            throw new IllegalStateException();
-        }
+        Exercise exercise = getExerciseById(id, auth);
+        log.trace("deleteExerciseById(). Exercise to delete: {}", () -> exercise);
+        exerciseRepository.delete(exercise);
+        log.trace("deleteExerciseById(). Exercise successfully deleted.");
     }
 
 
-    public Exercise getExerciseById(UUID id) {
+    public Exercise getExerciseById(@NotNull UUID id, @NotNull Authentication auth) {
         log.debug("getExerciseById() called. ID={}", id);
+        User currentUser = userService.getUserFromAuthentication(auth);
         Optional<Exercise> exerciseOpt = exerciseRepository.findById(id);
-        if (exerciseOpt.isPresent()) {
-            log.trace("getExerciseById(). Exercise with ID={} exists. Going to return: {}", () -> id, exerciseOpt::get);
-            return exerciseOpt.get();
-        } else {
+        if (exerciseOpt.isEmpty()) {
             log.warn("getExerciseById(). Exercise with ID={} does not exist. Will throw exception", id);
             throw new IllegalStateException();
         }
+        Exercise exercise = exerciseOpt.get();
+
+        if (!userService.canUserEditExercise(currentUser, exercise)) {
+            log.warn("getExerciseById(). Current user does not have rights to access the exercise with ID={}. User: {}", () -> id, () -> currentUser);
+            throw new SecurityException();
+        }
+
+        log.trace("getExerciseById(). Exercise with ID={} exists. Going to return: {}", () -> id, () -> exercise);
+        return exerciseOpt.get();
     }
 
 

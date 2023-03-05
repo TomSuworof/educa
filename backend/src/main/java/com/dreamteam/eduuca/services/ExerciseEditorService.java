@@ -2,10 +2,12 @@ package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.Exercise;
 import com.dreamteam.eduuca.entities.ExerciseState;
+import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.payload.request.ExerciseUploadRequest;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -14,9 +16,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ExerciseEditorService {
+    private final UserService userService;
     private final ExerciseService exerciseService;
 
-    public ExerciseDTO uploadExercise(ExerciseUploadRequest exerciseUploadRequest, ExerciseState exerciseState) {
+    public ExerciseDTO uploadExercise(ExerciseUploadRequest exerciseUploadRequest, ExerciseState exerciseState, Authentication auth) {
         log.debug("uploadExercise() called. Exercise upload request: {}, exercise state: {}", () -> exerciseUploadRequest, () -> exerciseState);
         Exercise exercise = new Exercise();
         log.trace("uploadExercise(). Blank new exercise: {}", () -> exercise);
@@ -33,6 +36,10 @@ public class ExerciseEditorService {
             log.trace("uploadExercise(). Exercise upload request does not contain custom URL, setting title as URL");
             exerciseUploadRequest.setCustomUrl(exerciseUploadRequest.getTitle());
         }
+
+        User author = userService.getUserFromAuthentication(auth);
+        log.trace("uploadExercise(). Exercise author: {}", () -> author);
+        exercise.setAuthor(author);
 
         exercise.setTitle(exerciseUploadRequest.getTitle());
         exercise.setCustomUrl(exerciseUploadRequest.getCustomUrl());

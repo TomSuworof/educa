@@ -16,6 +16,7 @@ import java.util.UUID;
 public class ExerciseDTO implements ObjectDTO {
     protected final UUID id;
     protected final String title;
+    protected final String authorName;
     protected final String content;
     protected final String solution;
     protected final OffsetDateTime publicationDate;
@@ -25,6 +26,7 @@ public class ExerciseDTO implements ObjectDTO {
         log.debug("new ExerciseDTO() called. Exercise: {}", () -> exercise);
         this.id = exercise.getId();
         this.title = exercise.getTitle();
+        this.authorName = exercise.getAuthor().getUsername();
         this.content = exercise.getContent();
         this.solution = exercise.getSolution();
         this.publicationDate = exercise.getPublicationDate();

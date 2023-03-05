@@ -12,7 +12,6 @@ import java.util.UUID;
 public class QuestionDTO {
     private final UUID id;
     private final UUID exerciseId;
-    private final String answer;
     private final String remark;
     private final String hint;
 }

@@ -1,5 +1,6 @@
 package com.dreamteam.eduuca.services;
 
+import com.dreamteam.eduuca.entities.Exercise;
 import com.dreamteam.eduuca.entities.Role;
 import com.dreamteam.eduuca.entities.RoleEnum;
 import com.dreamteam.eduuca.entities.User;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,7 +33,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User loadUserByUsername(String username) {
+    public User loadUserByUsername(@NotNull String username) {
         log.debug("loadUserByUsername() called. Username: {}", username);
 
         Optional<User> userOpt = userRepository.findByUsername(username);
@@ -44,7 +46,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User loadUserById(UUID id) {
+    public User loadUserById(@NotNull UUID id) {
         log.debug("loadUserById() called. ID: {}", id);
 
         Optional<User> userOpt = userRepository.findById(id);
@@ -57,7 +59,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User getUserFromAuthentication(Authentication authentication) {
+    public User getUserFromAuthentication(@NotNull Authentication authentication) {
         log.debug("getUserFromAuthentication() called. Auth: {}", () -> authentication);
         if (authentication == null) {
             log.warn("getUserFromAuthentication(). Auth is null. Will throw exception");
@@ -66,7 +68,7 @@ public class UserService implements UserDetailsService {
         return loadUserByUsername(authentication.getName());
     }
 
-    public UserDTO saveUser(SignupRequest signupRequest) {
+    public UserDTO saveUser(@NotNull SignupRequest signupRequest) {
         log.debug("saveUser() called. Sign uo request: {}", () -> signupRequest);
 
         if (existsByUsername(signupRequest.getUsername())) {
@@ -100,17 +102,17 @@ public class UserService implements UserDetailsService {
         return new UserDTO(user);
     }
 
-    private boolean existsByUsername(String username) {
+    private boolean existsByUsername(@NotNull String username) {
         log.debug("existsByUsername() called. Username: {}", username);
         return userRepository.existsByUsername(username);
     }
 
-    private boolean existsByEmail(String email) {
+    private boolean existsByEmail(@NotNull String email) {
         log.debug("existsByEmail() called. Email: {}", email);
         return userRepository.existsByEmail(email);
     }
 
-    public UserDTO updateUser(UUID userId, UserDataRequest userData) {
+    public UserDTO updateUser(@NotNull UUID userId, @NotNull UserDataRequest userData) {
         log.debug("updateUser() called. User ID: {}, user data: {}", () -> userId, () -> userData);
 
         Optional<User> userOpt = userRepository.findById(userId);
@@ -149,7 +151,7 @@ public class UserService implements UserDetailsService {
         return new UserDTO(userFromDB);
     }
 
-    public UserDTO changeRole(UUID userId, Role role) {
+    public UserDTO changeRole(@NotNull UUID userId, @NotNull Role role) {
         log.debug("changeRole() called. User ID: {}, role: {}", () -> userId, () -> role);
 
         Optional<User> userOpt = userRepository.findById(userId);
@@ -178,7 +180,7 @@ public class UserService implements UserDetailsService {
         return new UserDTO(userFromDB);
     }
 
-    public boolean isCurrentPasswordSameAs(UUID userId, String passwordAnother) {
+    public boolean isCurrentPasswordSameAs(@NotNull UUID userId, @NotNull String passwordAnother) {
         log.debug("isCurrentPasswordSameAs() called. User ID: {}", userId);
         User requiredUser = loadUserById(userId);
         log.trace("isCurrentPasswordSameAs(). Found user: {}", () -> requiredUser);
@@ -203,5 +205,15 @@ public class UserService implements UserDetailsService {
     private Page<User> getAllUsersPaginated(Integer limit, Integer offset) {
         log.debug("getAllUsersPaginated() called. Limit: {}, offset: {}", limit, offset);
         return userRepository.findAll(PageRequest.of(offset / limit, limit));
+    }
+
+    public boolean canUserEditExercise(@NotNull User user, @NotNull Exercise exercise) {
+        log.debug("canUserEditExercise() called. User: {}, exercise: {}", () -> user, () -> exercise);
+        boolean isAdmin = user.is(RoleEnum.ADMIN);
+        boolean isModerator = user.is(RoleEnum.MODERATOR);
+        boolean isAuthor = user.equals(exercise.getAuthor());
+
+        log.trace("canUserEditExercise(). isAdmin: {}, isModerator: {}, isAuthor: {}", isAdmin, isModerator, isAuthor);
+        return isAdmin || isModerator || isAuthor;
     }
 }

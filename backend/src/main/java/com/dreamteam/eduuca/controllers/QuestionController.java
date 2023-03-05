@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,29 +25,38 @@ import java.util.UUID;
 
 @Log4j2
 @Controller
+@SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("/api/questions")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
 
-    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<QuestionDTO> getQuestion(@PathVariable("id") String questionId) {
+        log.debug("getQuestion() called. ID={}", questionId);
+        QuestionDTO question = questionService.getQuestion(UUID.fromString(questionId));
+        log.trace("getQuestion(). Response to send: {}", question);
+        return ResponseEntity.ok().body(question);
+    }
+
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<QuestionDTO> addQuestion(@RequestBody QuestionUploadRequest questionUploadRequest) {
+    public ResponseEntity<QuestionDTO> addQuestion(@RequestBody QuestionUploadRequest questionUploadRequest, Authentication auth) {
         log.debug("addQuestion() called. Request: {}", () -> questionUploadRequest);
-        QuestionDTO question = questionService.addQuestion(questionUploadRequest);
+        QuestionDTO question = questionService.addQuestion(questionUploadRequest, auth);
         log.trace("addQQuestion(). Response to send: {}", question);
         return ResponseEntity.status(HttpStatus.CREATED).body(question);
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void deleteQuestion(@PathVariable("id") String questionId) {
+    public void deleteQuestion(@PathVariable("id") String questionId, Authentication auth) {
         log.debug("deleteQuestion() called. ID={}", questionId);
-        questionService.deleteQuestion(UUID.fromString(questionId));
+        questionService.deleteQuestion(UUID.fromString(questionId), auth);
         log.trace("deleteQuestion(). Sending OK");
     }
 

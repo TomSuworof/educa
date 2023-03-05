@@ -36,7 +36,8 @@ create table if not exists t_exercise
     content          text                     not null,
     question         text                     not null,
     publication_date timestamp with time zone not null,
-    state            integer                  not null
+    state            integer                  not null,
+    author_id        uuid                     not null constraint references_to_not_null_user_id references t_user
 );
 
 create table if not exists t_question
@@ -45,14 +46,14 @@ create table if not exists t_question
     answer      varchar(255),
     hint        varchar(255),
     remark      varchar(255),
-    exercise_id uuid          not null constraint references_to_null_exercise_id references t_exercise not null
+    exercise_id uuid          not null constraint references_to_not_null_exercise_id references t_exercise not null
 );
 
-create table if not exists t_users_roles
+create table if not exists t_user_roles
 (
     user_id  uuid  not null constraint references_to_not_null_user references t_user not null,
     role_id bigint not null constraint references_to_not_null_role references t_role not null,
-    constraint t_users_roles_pkey primary key (user_id, role_id)
+    constraint t_user_roles_pkey primary key (user_id, role_id)
 );
 
 create table if not exists t_tag

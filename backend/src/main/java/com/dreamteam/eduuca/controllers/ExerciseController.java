@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,9 +57,9 @@ public class ExerciseController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id) {
+    public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("getExercise() called. ID to search: {}", id);
-        Exercise exercise = exerciseService.getExerciseById(id);
+        Exercise exercise = exerciseService.getExerciseById(id, auth);
         log.trace("getExercise(). Exercise to return: {}", () -> exercise);
         return ResponseEntity.ok().body(new ExerciseDTO(exercise));
     }
@@ -67,9 +68,9 @@ public class ExerciseController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action) {
+    public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action, Authentication auth) {
         log.debug("uploadExercise() called. Exercise: {}, action: {}", exercise, action);
-        ExerciseDTO exerciseDTO = exerciseEditorService.uploadExercise(exercise, ExerciseState.getFromAction(action));
+        ExerciseDTO exerciseDTO = exerciseEditorService.uploadExercise(exercise, ExerciseState.getFromAction(action), auth);
         log.trace("uploadExercise(). Result exercise DTO: {}", () -> exerciseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(exerciseDTO);
     }
@@ -78,8 +79,8 @@ public class ExerciseController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void deleteExercise(@PathVariable UUID id) {
+    public void deleteExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("deleteExercise() called. ID: {}", id);
-        exerciseService.deleteExerciseById(id);
+        exerciseService.deleteExerciseById(id, auth);
     }
 }
