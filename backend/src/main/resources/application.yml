@@ -38,3 +38,9 @@ logging:
   level:
     root: INFO
     com.dreamteam.eduuca: TRACE
+
+eduuca:
+  tag-predictions:
+    models:
+      sklearn: ${EDUUCA_SKLEARN_MODEL_URL:http://localhost:5001/predictions}
+      yake: ${EDUUCA_YAKE_MODEL_URL:http://localhost:5002/predictions}
