@@ -1,0 +1,9 @@
+services:
+  eduuca-model-sklearn:
+    image: tomsuworof/eduuca-model-sklearn-cog
+    ports:
+      - "5001:5000"
+  eduuca-model-yake:
+    image: tomsuworof/eduuca-model-yake-cog
+    ports:
+      - "5002:5000"
