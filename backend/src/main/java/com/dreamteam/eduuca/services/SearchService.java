@@ -16,6 +16,12 @@ public class SearchService {
     private final ExerciseRepository exerciseRepository;
 
     public List<ExerciseDTO> search(String query) {
-        return exerciseRepository.fullTextSearch(query).stream().map(ExerciseDTO::new).collect(Collectors.toList());
+        log.debug("search() called. Query: {}", () -> query);
+        return exerciseRepository
+                .fullTextSearch(query)
+                .stream()
+                .peek(exercise -> log.trace("search(). Found exercise: {}", () -> exercise))
+                .map(ExerciseDTO::new)
+                .collect(Collectors.toList());
     }
 }

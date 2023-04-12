@@ -3,6 +3,7 @@ package com.dreamteam.eduuca.entities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
+@Log4j2
 @Entity
 @Getter
 @Table(name = "t_password_reset_request")
@@ -39,11 +41,15 @@ public class PasswordResetRequest {
     }
 
     public Boolean isValid() {
+        log.debug("isValid() called.");
         Calendar now = new GregorianCalendar();
         Date dateCreated = this.created;
         Calendar dateExpired = new GregorianCalendar();
         dateExpired.setTime(dateCreated);
         dateExpired.add(Calendar.HOUR, 24);
-        return now.before(dateExpired);
+        log.trace("isValid(). Now: {}, date expired: {}", now, dateExpired);
+        boolean result = now.before(dateExpired);
+        log.trace("isValid(). Request is valid: {}", result);
+        return result;
     }
 }
