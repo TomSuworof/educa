@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -22,4 +23,6 @@ public interface ExerciseRepository extends JpaRepository<Exercise, UUID> {
 
     @Query(value = "select * from t_exercise where to_tsvector(title || ' ' || custom_url || ' ' || content || ' ' || solution)  @@ to_tsquery( :query );", nativeQuery = true)
     List<Exercise> fullTextSearch(String query);
+
+    Page<Exercise> findExercisesByStateAndTags_IdIn(ExerciseState state, Set<UUID> tags_id, Pageable pageable);
 }

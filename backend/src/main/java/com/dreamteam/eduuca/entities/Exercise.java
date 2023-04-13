@@ -7,17 +7,21 @@ import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -60,6 +64,13 @@ public class Exercise {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private User author;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
+    @JoinTable(name = "t_exercises_tags",
+            joinColumns = {@JoinColumn(name = "exercise_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    @org.springframework.data.annotation.Transient
+    private Set<Tag> tags;
 
     @Override
     public boolean equals(Object o) {

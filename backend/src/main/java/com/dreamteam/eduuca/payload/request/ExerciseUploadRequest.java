@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -15,4 +16,5 @@ public class ExerciseUploadRequest {
     private String customUrl;
     private String content;
     private String solution;
+    private List<String> tags;
 }

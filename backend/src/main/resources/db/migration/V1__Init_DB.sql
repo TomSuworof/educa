@@ -65,5 +65,5 @@ create table if not exists t_tag
 create table if not exists t_exercises_tags
 (
     exercise_id uuid not null constraint references_to_not_null_exercise_id references t_exercise,
-    tag_id      uuid not null constraint references_to_not_null_tag_is references t_tag
+    tag_id      uuid not null constraint references_to_not_null_tag_id      references t_tag
 );

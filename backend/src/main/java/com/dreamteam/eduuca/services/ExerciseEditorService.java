@@ -18,6 +18,7 @@ import java.util.UUID;
 public class ExerciseEditorService {
     private final UserService userService;
     private final ExerciseService exerciseService;
+    private final TagService tagService;
 
     public ExerciseDTO uploadExercise(ExerciseUploadRequest exerciseUploadRequest, ExerciseState exerciseState, Authentication auth) {
         log.debug("uploadExercise() called. Exercise upload request: {}, exercise state: {}", () -> exerciseUploadRequest, () -> exerciseState);
@@ -46,6 +47,7 @@ public class ExerciseEditorService {
         exercise.setContent(exerciseUploadRequest.getContent());
         exercise.setSolution(exerciseUploadRequest.getSolution());
         exercise.setState(exerciseState);
+        exercise.setTags(tagService.mapToTags(exerciseUploadRequest.getTags()));
 
         log.trace("uploadExercise(). Result exercise to save: {}", () -> exercise);
         exerciseService.saveExercise(exercise);

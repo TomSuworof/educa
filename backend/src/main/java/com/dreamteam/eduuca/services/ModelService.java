@@ -23,19 +23,19 @@ public class ModelService {
     @Value("${eduuca.tag-predictions.models.yake}")
     private String eduucaYakeModelUrl;
 
-    public List<String> getTags(String text) {
-        log.debug("getTags() called. Text: {}", () -> text);
+    public List<String> predictTags(String text) {
+        log.debug("predictTags() called. Text: {}", () -> text);
         List<String> tagsSklearn = getPredictionOutput(text, eduucaSklearnModelUrl);
         List<String> tagsYake = getPredictionOutput(text, eduucaYakeModelUrl);
 
-        log.trace("getTags(). From sklearn: {}", () -> tagsSklearn);
-        log.trace("getTags(). From yake: {}", () -> tagsYake);
+        log.trace("predictTags(). From sklearn: {}", () -> tagsSklearn);
+        log.trace("predictTags(). From yake: {}", () -> tagsYake);
 
         Set<String> result = new HashSet<>();
         result.addAll(tagsSklearn);
         result.addAll(tagsYake);
 
-        log.trace("getTags(). Result: {}", () -> result);
+        log.trace("predictTags(). Result: {}", () -> result);
 
         return result.stream().toList();
     }
