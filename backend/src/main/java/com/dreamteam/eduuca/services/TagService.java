@@ -66,4 +66,18 @@ public class TagService {
                 exercises.getContent().stream().map(ExerciseDTO::new).toList()
         );
     }
+
+    public List<Tag> getTagsWithExclusion(List<String> excludedTagNames) {
+        log.debug("getTagsWithExclusion() called. Excluded tag names: {}", () -> excludedTagNames);
+
+        List<Tag> tags = tagRepository
+                .findAll()
+                .stream()
+                .filter(tag -> !excludedTagNames.contains(tag.getName()))
+                .toList();
+
+        log.trace("getTagsWithExclusion(). Tags after exclusion: {}", () -> tags);
+
+        return tags;
+    }
 }

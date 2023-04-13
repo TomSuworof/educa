@@ -1,5 +1,6 @@
 package com.dreamteam.eduuca.controllers;
 
+import com.dreamteam.eduuca.entities.Tag;
 import com.dreamteam.eduuca.payload.common.Input;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
@@ -53,5 +54,15 @@ public class TagController {
         PageResponseDTO<ExerciseDTO> response = tagService.getPageWithExercises(tags, limit, offset);
         log.trace("getExercisesByTags(). Response: {}", () -> response);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/get_tags")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<List<String>> getTagsWithExclusion(@RequestBody List<String> excludedTags) {
+        log.debug("getTagsWithExclusion() called. Excluded tags: {}", () -> excludedTags);
+        List<String> tags = tagService.getTagsWithExclusion(excludedTags).stream().map(Tag::getName).toList();
+        log.trace("getTagsWithExclusion(). Response: {}", () -> tags);
+        return ResponseEntity.ok().body(tags);
     }
 }
