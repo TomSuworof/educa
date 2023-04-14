@@ -1,58 +1,35 @@
 package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.entities.Exercise;
-import com.dreamteam.eduuca.entities.ExerciseState;
-import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.payload.request.ExerciseUploadRequest;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.Authentication;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Log4j2
 @Service
-@RequiredArgsConstructor
-public class ExerciseEditorService {
-    private final UserService userService;
-    private final ExerciseService exerciseService;
-    private final TagService tagService;
+public class ExerciseEditorService extends ArticleEditorService<Exercise, ExerciseUploadRequest, ExerciseDTO> {
+    public ExerciseEditorService(UserService userService, ArticleService articleService, TagService tagService) {
+        super(userService, articleService, tagService);
+    }
 
-    public ExerciseDTO uploadExercise(ExerciseUploadRequest exerciseUploadRequest, ExerciseState exerciseState, Authentication auth) {
-        log.debug("uploadExercise() called. Exercise upload request: {}, exercise state: {}", () -> exerciseUploadRequest, () -> exerciseState);
-        Exercise exercise = new Exercise();
-        log.trace("uploadExercise(). Blank new exercise: {}", () -> exercise);
+    @Override
+    protected @NotNull Exercise newBlankEntity() {
+        return new Exercise();
+    }
 
-        if (exerciseUploadRequest.getId() != null) {
-            log.trace("uploadExercise(). Exercise upload request contains ID={}, setting this ID to new Exercise", exerciseUploadRequest.getId());
-            exercise.setId(exerciseUploadRequest.getId());
-        } else {
-            log.trace("uploadExercise(). Exercise upload request does not contains ID, setting new random");
-            exercise.setId(UUID.randomUUID());
-        }
+    @Override
+    protected void enrichFromRequest(Exercise exercise, ExerciseUploadRequest uploadRequest) {
+        exercise.setTitle(uploadRequest.getTitle());
+        exercise.setCustomUrl(uploadRequest.getCustomUrl());
+        exercise.setContent(uploadRequest.getContent());
+        exercise.setSolution(uploadRequest.getSolution());
+    }
 
-        if (exerciseUploadRequest.getCustomUrl() == null) {
-            log.trace("uploadExercise(). Exercise upload request does not contain custom URL, setting title as URL");
-            exerciseUploadRequest.setCustomUrl(exerciseUploadRequest.getTitle());
-        }
-
-        User author = userService.getUserFromAuthentication(auth);
-        log.trace("uploadExercise(). Exercise author: {}", () -> author);
-        exercise.setAuthor(author);
-
-        exercise.setTitle(exerciseUploadRequest.getTitle());
-        exercise.setCustomUrl(exerciseUploadRequest.getCustomUrl());
-        exercise.setContent(exerciseUploadRequest.getContent());
-        exercise.setSolution(exerciseUploadRequest.getSolution());
-        exercise.setState(exerciseState);
-        exercise.setTags(tagService.mapToTags(exerciseUploadRequest.getTags()));
-
-        log.trace("uploadExercise(). Result exercise to save: {}", () -> exercise);
-        exerciseService.saveExercise(exercise);
-        log.trace("uploadExercise(). Exercise successfully saved. Exercise: {}", () -> exercise);
-
+    @NotNull
+    @Override
+    protected ExerciseDTO entityToDTO(Exercise exercise) {
         return new ExerciseDTO(exercise);
     }
 }

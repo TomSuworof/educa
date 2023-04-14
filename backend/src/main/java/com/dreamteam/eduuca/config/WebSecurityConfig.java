@@ -45,6 +45,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/exercises/**",
+                        "/api/lectures/**",
                         "/api/auth/**",
                         "/api/password_reset/**",
                         "/api/search/**",

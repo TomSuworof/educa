@@ -1,27 +1,29 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.payload.response.ExerciseDTO;
-import com.dreamteam.eduuca.repositories.ExerciseRepository;
+import com.dreamteam.eduuca.payload.response.ArticleDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private final ExerciseRepository exerciseRepository;
+    private final ExerciseQueryService exerciseQueryService;
+    private final LectureQueryService lectureQueryService;
 
-    public List<ExerciseDTO> search(String query) {
+    public List<ArticleDTO> search(String query) {
         log.debug("search() called. Query: {}", () -> query);
-        return exerciseRepository
-                .fullTextSearch(query)
-                .stream()
-                .peek(exercise -> log.trace("search(). Found exercise: {}", () -> exercise))
-                .map(ExerciseDTO::new)
-                .collect(Collectors.toList());
+        List<ArticleDTO> articles = new LinkedList<>();
+
+        articles.addAll(exerciseQueryService.search(query));
+        articles.addAll(lectureQueryService.search(query));
+
+        log.trace("search(). Search results count: {}", articles::size);
+
+        return articles;
     }
 }

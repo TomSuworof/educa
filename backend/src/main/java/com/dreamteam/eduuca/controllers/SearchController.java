@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.controllers;
 
-import com.dreamteam.eduuca.payload.response.ExerciseDTO;
+import com.dreamteam.eduuca.payload.response.ArticleDTO;
 import com.dreamteam.eduuca.services.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,9 +25,9 @@ public class SearchController {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<List<ExerciseDTO>> search(@RequestParam String query) {
+    public ResponseEntity<List<ArticleDTO>> search(@RequestParam String query) {
         log.debug("search() called. Query: {}", () -> query);
-        List<ExerciseDTO> searchResults = searchService.search(query);
+        List<ArticleDTO> searchResults = searchService.search(query);
         log.trace("search(). Results size: {}", searchResults::size);
         return ResponseEntity.ok(searchResults);
     }

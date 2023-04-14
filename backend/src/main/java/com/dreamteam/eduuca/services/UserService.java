@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.Exercise;
+import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.entities.Role;
 import com.dreamteam.eduuca.entities.RoleEnum;
 import com.dreamteam.eduuca.entities.User;
@@ -8,6 +8,7 @@ import com.dreamteam.eduuca.payload.request.SignupRequest;
 import com.dreamteam.eduuca.payload.request.UserDataRequest;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.UserDTO;
+import com.dreamteam.eduuca.repositories.RoleRepository;
 import com.dreamteam.eduuca.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +31,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -85,7 +88,15 @@ public class UserService implements UserDetailsService {
         user.setUsername(signupRequest.getUsername());
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRoles(Set.of(RoleEnum.USER.getAsObject()));
+
+        Optional<Role> roleOpt = roleRepository.findById(RoleEnum.USER.getAsObject().getId());
+        if (roleOpt.isEmpty()) {
+            log.warn("saveUser(). Role not found");
+            throw new IllegalStateException();
+        }
+        Role role = roleOpt.get();
+
+        user.setRoles(Set.of(role));
 
         log.trace("saveUser(). User to save: {}", () -> user);
         userRepository.save(user);
@@ -207,13 +218,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll(PageRequest.of(offset / limit, limit));
     }
 
-    public boolean canUserEditExercise(@NotNull User user, @NotNull Exercise exercise) {
-        log.debug("canUserEditExercise() called. User: {}, exercise: {}", () -> user, () -> exercise);
+    public boolean canUserEditArticle(@NotNull User user, @NotNull Article article) {
+        log.debug("canUserEditArticle() called. User: {}, article: {}", () -> user, () -> article);
         boolean isAdmin = user.is(RoleEnum.ADMIN);
         boolean isModerator = user.is(RoleEnum.MODERATOR);
-        boolean isAuthor = user.equals(exercise.getAuthor());
+        boolean isAuthor = user.equals(article.getAuthor());
 
-        log.trace("canUserEditExercise(). isAdmin: {}, isModerator: {}, isAuthor: {}", isAdmin, isModerator, isAuthor);
+        log.trace("canUserEditArticle(). isAdmin: {}, isModerator: {}, isAuthor: {}", isAdmin, isModerator, isAuthor);
         return isAdmin || isModerator || isAuthor;
     }
 }

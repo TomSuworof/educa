@@ -3,8 +3,11 @@ package com.dreamteam.eduuca.controllers;
 import com.dreamteam.eduuca.entities.Tag;
 import com.dreamteam.eduuca.payload.common.Input;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
+import com.dreamteam.eduuca.payload.response.LectureDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.TagResponse;
+import com.dreamteam.eduuca.services.ExerciseQueryService;
+import com.dreamteam.eduuca.services.LectureQueryService;
 import com.dreamteam.eduuca.services.ModelService;
 import com.dreamteam.eduuca.services.TagService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,6 +31,8 @@ import java.util.List;
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
 public class TagController {
+    private final ExerciseQueryService exerciseQueryService;
+    private final LectureQueryService lectureQueryService;
     private final ModelService modelService;
     private final TagService tagService;
 
@@ -51,8 +56,22 @@ public class TagController {
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getExercisesByTags() called. Tags: {}", () -> tags);
-        PageResponseDTO<ExerciseDTO> response = tagService.getPageWithExercises(tags, limit, offset);
+        PageResponseDTO<ExerciseDTO> response = exerciseQueryService.getPageByTags(tags, limit, offset);
         log.trace("getExercisesByTags(). Response: {}", () -> response);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/get_lectures")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<PageResponseDTO<LectureDTO>> getLecturesByTags(
+            @RequestBody List<String> tags,
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "0") Integer offset
+    ) {
+        log.debug("getLecturesByTags() called. Tags: {}", () -> tags);
+        PageResponseDTO<LectureDTO> response = lectureQueryService.getPageByTags(tags, limit, offset);
+        log.trace("getLecturesByTags(). Response: {}", () -> response);
         return ResponseEntity.ok().body(response);
     }
 

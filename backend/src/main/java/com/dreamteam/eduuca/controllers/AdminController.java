@@ -1,11 +1,14 @@
 package com.dreamteam.eduuca.controllers;
 
-import com.dreamteam.eduuca.entities.ExerciseState;
+import com.dreamteam.eduuca.config.ControllerUtils;
+import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.RoleEnum;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
+import com.dreamteam.eduuca.payload.response.LectureDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.UserDTO;
-import com.dreamteam.eduuca.services.ExerciseService;
+import com.dreamteam.eduuca.services.ExerciseQueryService;
+import com.dreamteam.eduuca.services.LectureQueryService;
 import com.dreamteam.eduuca.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +30,9 @@ import java.util.UUID;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
-    private final ExerciseService exerciseService;
+    private final ExerciseQueryService exerciseQueryService;
+    private final LectureQueryService lectureQueryService;
+
     private final UserService userService;
 
     @GetMapping("/users")
@@ -66,15 +71,21 @@ public class AdminController {
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getExercisePaginated() called. State: {}, limit: {}, offset: {}", state, limit, offset);
-        PageResponseDTO<ExerciseDTO> response = exerciseService.getPageWithExercisesByState(ExerciseState.getFromDescription(state), limit, offset);
+        PageResponseDTO<ExerciseDTO> response = exerciseQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
         log.trace("getExercisePaginated(). Response to send: {}", () -> response);
+        return ControllerUtils.processPartialResponse(response);
+    }
 
-        if (!response.isHasBefore() && !response.isHasAfter()) {
-            log.trace("getExercisesPaginated(). Response contains all exercises. Response status is OK");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-            log.trace("getExercisesPaginated(). Response does not contain all exercises. Response status is PARTIAL_CONTENT");
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(response);
-        }
+    @GetMapping("/lectures")
+    @ResponseBody
+    public ResponseEntity<PageResponseDTO<LectureDTO>> getLecturesPaginated(
+            @RequestParam(required = false, defaultValue = "all") String state,
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "0") Integer offset
+    ) {
+        log.debug("getLecturesPaginated() called. State: {}, limit: {}, offset: {}", state, limit, offset);
+        PageResponseDTO<LectureDTO> response = lectureQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
+        log.trace("getLecturesPaginated(). Response to send: {}", () -> response);
+        return ControllerUtils.processPartialResponse(response);
     }
 }

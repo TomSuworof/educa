@@ -16,7 +16,7 @@ insert into t_role (id, name) values
     (1, 'ROLE_ADMIN'),
     (2, 'ROLE_USER'),
     (3, 'ROLE_MODERATOR')
-on conflict(id) do update set id = excluded.id, name = excluded.name;
+on conflict (id) do nothing;
 
 create table if not exists t_user
 (
@@ -28,16 +28,17 @@ create table if not exists t_user
     avatar   text
 );
 
-create table if not exists t_exercise
+create table if not exists t_article
 (
-    id               uuid                     not null constraint t_exercise_pkey primary key,
+    dtype            varchar(31),
+    id               uuid                     not null constraint t_article_pkey primary key,
     title            varchar(255)             not null,
     custom_url       varchar(255)             not null,
     content          text                     not null,
-    question         text                     not null,
-    publication_date timestamp with time zone not null,
+    solution         text,
+    tion_date timestamp with time zone not null,
     state            integer                  not null,
-    author_id        uuid                     not null constraint references_to_not_null_user_id references t_user
+    author_id        uuid                     not null constraint references_to_not_null_user_id references t_user not null
 );
 
 create table if not exists t_question
@@ -46,10 +47,10 @@ create table if not exists t_question
     answer      varchar(255),
     hint        varchar(255),
     remark      varchar(255),
-    exercise_id uuid          not null constraint references_to_not_null_exercise_id references t_exercise not null
+    exercise_id uuid          not null constraint references_to_not_null_exercise_id references t_article not null
 );
 
-create table if not exists t_user_roles
+create table if not exists t_users_roles
 (
     user_id  uuid  not null constraint references_to_not_null_user references t_user not null,
     role_id bigint not null constraint references_to_not_null_role references t_role not null,
@@ -62,8 +63,8 @@ create table if not exists t_tag
     name varchar(255) not null
 );
 
-create table if not exists t_exercises_tags
+create table if not exists t_articles_tags
 (
-    exercise_id uuid not null constraint references_to_not_null_exercise_id references t_exercise,
-    tag_id      uuid not null constraint references_to_not_null_tag_id      references t_tag
+    article_id uuid not null constraint references_to_not_null_article_id references t_article not null,
+    tag_id     uuid not null constraint references_to_not_null_tag_id     references t_tag     not null
 );

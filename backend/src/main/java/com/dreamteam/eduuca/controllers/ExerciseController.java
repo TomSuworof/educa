@@ -1,12 +1,13 @@
 package com.dreamteam.eduuca.controllers;
 
+import com.dreamteam.eduuca.config.ControllerUtils;
+import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.Exercise;
-import com.dreamteam.eduuca.entities.ExerciseState;
 import com.dreamteam.eduuca.payload.request.ExerciseUploadRequest;
 import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.services.ExerciseEditorService;
-import com.dreamteam.eduuca.services.ExerciseService;
+import com.dreamteam.eduuca.services.ExerciseQueryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +32,7 @@ import java.util.UUID;
 @RequestMapping("/api/exercises")
 @RequiredArgsConstructor
 public class ExerciseController {
-    private final ExerciseService exerciseService;
+    private final ExerciseQueryService exerciseQueryService;
     private final ExerciseEditorService exerciseEditorService;
 
     @GetMapping("")
@@ -41,16 +42,9 @@ public class ExerciseController {
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getExercisesPaginated() called. Limit={}, offset={}", limit, offset);
-        PageResponseDTO<ExerciseDTO> response = exerciseService.getPageWithExercisesByState(ExerciseState.PUBLISHED, limit, offset);
+        PageResponseDTO<ExerciseDTO> response = exerciseQueryService.getPageByState(ArticleState.PUBLISHED, limit, offset);
         log.trace("getExercisesPaginated(). Response to send: {}", () -> response);
-
-        if (!response.isHasBefore() && !response.isHasAfter()) {
-            log.trace("getExercisesPaginated(). Response contains all exercises. Response status is OK");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-            log.trace("getExercisesPaginated(). Response does not contain all exercises. Response status is PARTIAL_CONTENT");
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(response);
-        }
+        return ControllerUtils.processPartialResponse(response);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
@@ -59,7 +53,7 @@ public class ExerciseController {
     @ResponseBody
     public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("getExercise() called. ID to search: {}", id);
-        Exercise exercise = exerciseService.getExerciseById(id, auth);
+        Exercise exercise = exerciseQueryService.getById(id, auth);
         log.trace("getExercise(). Exercise to return: {}", () -> exercise);
         return ResponseEntity.ok().body(new ExerciseDTO(exercise));
     }
@@ -70,7 +64,7 @@ public class ExerciseController {
     @ResponseBody
     public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action, Authentication auth) {
         log.debug("uploadExercise() called. Exercise: {}, action: {}", exercise, action);
-        ExerciseDTO exerciseDTO = exerciseEditorService.uploadExercise(exercise, ExerciseState.getFromAction(action), auth);
+        ExerciseDTO exerciseDTO = exerciseEditorService.upload(exercise, ArticleState.getFromAction(action), auth);
         log.trace("uploadExercise(). Result exercise DTO: {}", () -> exerciseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(exerciseDTO);
     }
@@ -81,6 +75,6 @@ public class ExerciseController {
     @ResponseBody
     public void deleteExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("deleteExercise() called. ID: {}", id);
-        exerciseService.deleteExerciseById(id, auth);
+        exerciseQueryService.deleteById(id, auth);
     }
 }

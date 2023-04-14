@@ -7,7 +7,7 @@ import com.dreamteam.eduuca.payload.request.AnswerRequest;
 import com.dreamteam.eduuca.payload.request.QuestionUploadRequest;
 import com.dreamteam.eduuca.payload.response.AnswerResponse;
 import com.dreamteam.eduuca.payload.response.QuestionDTO;
-import com.dreamteam.eduuca.repositories.ExerciseRepository;
+import com.dreamteam.eduuca.repositories.ArticleRepository;
 import com.dreamteam.eduuca.repositories.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,7 +24,7 @@ import java.util.UUID;
 public class QuestionService {
     private final UserService userService;
 
-    private final ExerciseRepository exerciseRepository;
+    private final ArticleRepository<Exercise> exerciseRepository;
     private final QuestionRepository questionRepository;
 
     public @NotNull QuestionDTO getQuestion(@NotNull UUID questionId) {
@@ -49,7 +49,7 @@ public class QuestionService {
         Exercise exercise = exerciseOpt.get();
 
         User currentUser = userService.getUserFromAuthentication(auth);
-        if (!userService.canUserEditExercise(currentUser, exercise)) {
+        if (!userService.canUserEditArticle(currentUser, exercise)) {
             log.warn("addQuestion(). Current user does not have rights to access exercise and questions. Exercise ID={}, user: {}", exercise::getId, () -> currentUser);
             throw new SecurityException();
         }
@@ -83,7 +83,7 @@ public class QuestionService {
         Question question = questionOpt.get();
 
         User currentUser = userService.getUserFromAuthentication(auth);
-        if (!userService.canUserEditExercise(currentUser, question.getExercise())) {
+        if (!userService.canUserEditArticle(currentUser, question.getExercise())) {
             log.warn("deleteQuestion(). Current user cannot access question. Question ID={}, user: {}", () -> questionId, () -> currentUser);
         }
 
