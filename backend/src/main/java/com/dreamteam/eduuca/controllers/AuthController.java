@@ -51,16 +51,13 @@ public class AuthController {
 
         User user = (User) authentication.getPrincipal();
 
-        Set<String> roles = user.getAuthorities().stream()
+        Set<String> roles = user
+                .getAuthorities()
+                .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        return ResponseEntity.ok().body(new JwtResponse(
-                jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                roles));
+        return ResponseEntity.ok().body(new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), roles));
     }
 
     @PostMapping("/signup")
