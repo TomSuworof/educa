@@ -23,7 +23,7 @@ public enum RoleEnum {
                 return role;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException("Role does not exist");
     }
 
     public static RoleEnum getFromDescription(String description) {
@@ -32,6 +32,6 @@ public enum RoleEnum {
                 return role;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException("Role does not exist");
     }
 }

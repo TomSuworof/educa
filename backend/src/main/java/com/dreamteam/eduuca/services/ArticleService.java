@@ -24,7 +24,7 @@ public class ArticleService {
             case IN_EDITING -> saveDraft(article);
             default -> {
                 log.warn("saveArticle(). Article have incorrect state. Will throw exception");
-                throw new IllegalStateException();
+                throw new IllegalStateException("Incorrect action");
             }
         }
     }
@@ -60,7 +60,7 @@ public class ArticleService {
         log.debug("editDraft() called. New article: {}, old article: {}", () -> newArticle, () -> oldArticle);
 
         if (newArticle.getAuthor().equals(oldArticle.getAuthor())) {
-            throw new SecurityException();
+            throw new SecurityException("Current user does not have rights to edit article");
         }
 
         newArticle.setPublicationDate(OffsetDateTime.now());
@@ -104,7 +104,7 @@ public class ArticleService {
         log.debug("editPublished() called. New article: {}, old article: {}", () -> newArticle, () -> oldArticle);
 
         if (!newArticle.getAuthor().equals(oldArticle.getAuthor())) {
-            throw new SecurityException();
+            throw new SecurityException("Current user does not have rights to edit article");
         }
 
         newArticle.setPublicationDate(oldArticle.getPublicationDate());

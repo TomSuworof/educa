@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,7 +46,7 @@ public class UserService implements UserDetailsService {
             return userOpt.get();
         } else {
             log.warn("loadUserByUsername(). User is not present. Will throw exception");
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("User does not exist");
         }
     }
 
@@ -58,7 +59,7 @@ public class UserService implements UserDetailsService {
             return userOpt.get();
         } else {
             log.warn("loadUserById(). User is not present. Will throw exception");
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("User does not exist");
         }
     }
 
@@ -66,7 +67,7 @@ public class UserService implements UserDetailsService {
         log.debug("getUserFromAuthentication() called. Auth: {}", () -> authentication);
         if (authentication == null) {
             log.warn("getUserFromAuthentication(). Auth is null. Will throw exception");
-            throw new IllegalStateException();
+            throw new SecurityException("User not authorized");
         }
         return loadUserByUsername(authentication.getName());
     }
@@ -76,12 +77,12 @@ public class UserService implements UserDetailsService {
 
         if (existsByUsername(signupRequest.getUsername())) {
             log.warn("saveUser(). User with this username '{}' already exists", signupRequest.getUsername());
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("User with this username already exists");
         }
 
         if (existsByEmail(signupRequest.getEmail())) {
             log.warn("saveUser(). User with this email '{}' already exists", signupRequest.getEmail());
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("User with this email already exists");
         }
 
         User user = new User();
@@ -92,7 +93,7 @@ public class UserService implements UserDetailsService {
         Optional<Role> roleOpt = roleRepository.findById(RoleEnum.USER.getAsObject().getId());
         if (roleOpt.isEmpty()) {
             log.warn("saveUser(). Role not found");
-            throw new IllegalStateException();
+            throw new IllegalStateException("Role does not exist");
         }
         Role role = roleOpt.get();
 
@@ -129,7 +130,7 @@ public class UserService implements UserDetailsService {
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             log.warn("updateUser(). User with ID={} does not exist", userId);
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("User does not exist");
         }
 
         User userFromDB = userOpt.get();
@@ -168,7 +169,7 @@ public class UserService implements UserDetailsService {
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             log.warn("changeRole(). User with ID={} does not exist", userId);
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("User does not exist");
         }
 
         User userFromDB = userOpt.get();

@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class QuestionService {
         Optional<Question> questionOpt = questionRepository.findById(questionId);
         if (questionOpt.isEmpty()) {
             log.warn("getQuestion(). Question with ID={} not found", questionId);
-            throw new IllegalArgumentException();
+            throw new EntityNotFoundException("Question does not exist");
         }
         Question question = questionOpt.get();
         log.trace("getQuestion(). Question found: {}", () -> question);
@@ -44,14 +45,14 @@ public class QuestionService {
         Optional<Exercise> exerciseOpt = exerciseRepository.findById(questionUploadRequest.getExerciseId());
         if (exerciseOpt.isEmpty()) {
             log.warn("addQuestion(). Exercise with required ID={} not found", questionUploadRequest.getExerciseId());
-            throw new IllegalArgumentException("Exercise does not exist");
+            throw new EntityNotFoundException("Exercise does not exist");
         }
         Exercise exercise = exerciseOpt.get();
 
         User currentUser = userService.getUserFromAuthentication(auth);
         if (!userService.canUserEditArticle(currentUser, exercise)) {
             log.warn("addQuestion(). Current user does not have rights to access exercise and questions. Exercise ID={}, user: {}", exercise::getId, () -> currentUser);
-            throw new SecurityException();
+            throw new SecurityException("Current user does not have rights to access exercise and questions");
         }
 
         Question question = new Question();
@@ -78,7 +79,7 @@ public class QuestionService {
         Optional<Question> questionOpt = questionRepository.findById(questionId);
         if (questionOpt.isEmpty()) {
             log.warn("deleteQuestion(). Question with ID={} not found", questionId);
-            throw new IllegalArgumentException("Question does not exist");
+            throw new EntityNotFoundException("Question does not exist");
         }
         Question question = questionOpt.get();
 
@@ -97,7 +98,7 @@ public class QuestionService {
         Optional<Question> questionOpt = questionRepository.findById(answerRequest.getQuestionId());
         if (questionOpt.isEmpty()) {
             log.warn("answerQuestion(). Question with ID={} not found", answerRequest.getQuestionId());
-            throw new IllegalArgumentException("Question does not exist");
+            throw new EntityNotFoundException("Question does not exist");
         }
         Question question = questionOpt.get();
 

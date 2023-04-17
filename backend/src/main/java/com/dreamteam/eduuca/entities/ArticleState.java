@@ -22,7 +22,7 @@ public enum ArticleState {
                 return state;
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalStateException("State does not exist");
     }
 
     public static ArticleState getFromDescription(String description) {
@@ -31,6 +31,6 @@ public enum ArticleState {
                 return state;
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalStateException("State does not exist");
     }
 }

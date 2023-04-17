@@ -39,13 +39,13 @@ public abstract class ArticleQueryService<E extends Article, DTO extends Article
         Optional<E> articleOpt = articleRepository.findById(id);
         if (articleOpt.isEmpty()) {
             log.warn("getArticleById(). Article with ID={} does not exist. Will throw exception", id);
-            throw new IllegalStateException();
+            throw new IllegalStateException("Article with this does not exist");
         }
         E article = articleOpt.get();
 
         if (!userService.canUserEditArticle(currentUser, article)) {
             log.warn("getArticleById(). Current user does not have rights to access the article with ID={}. User: {}", () -> id, () -> currentUser);
-            throw new SecurityException();
+            throw new SecurityException("User does not have rights to access the article");
         }
 
         log.trace("getArticleById(). Article with ID={} exists. Going to return: {}", () -> id, () -> article);
