@@ -12,6 +12,7 @@ import com.dreamteam.eduuca.repositories.RoleRepository;
 import com.dreamteam.eduuca.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User loadUserByUsername(@NotNull String username) {
+    public @NotNull User loadUserByUsername(@NotNull String username) throws EntityNotFoundException {
         log.debug("loadUserByUsername() called. Username: {}", username);
 
         Optional<User> userOpt = userRepository.findByUsername(username);
@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User loadUserById(@NotNull UUID id) {
+    public @NotNull User loadUserById(@NotNull UUID id) throws EntityNotFoundException {
         log.debug("loadUserById() called. ID: {}", id);
 
         Optional<User> userOpt = userRepository.findById(id);
@@ -63,12 +63,21 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User getUserFromAuthentication(@NotNull Authentication authentication) {
-        log.debug("getUserFromAuthentication() called. Auth: {}", () -> authentication);
-        if (authentication == null) {
-            log.warn("getUserFromAuthentication(). Auth is null. Will throw exception");
-            throw new SecurityException("User not authorized");
+    public @NotNull User loadUserByEmail(@NotNull String email) throws EntityNotFoundException {
+        log.debug("loadUserByEmail() called. Email: {}", email);
+
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            log.trace("loadUserByEmail(). User is present: {}", userOpt::get);
+            return userOpt.get();
+        } else {
+            log.warn("loadUserByEmail(). User is not present. Will throw exception");
+            throw new EntityNotFoundException("User does not exist");
         }
+    }
+
+    public @NotNull User getUserFromAuthentication(@NotNull Authentication authentication) throws EntityNotFoundException {
+        log.debug("getUserFromAuthentication() called. Auth: {}", () -> authentication);
         return loadUserByUsername(authentication.getName());
     }
 

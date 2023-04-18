@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,16 +41,23 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
         log.debug("authenticateUser() called. Login request cannot be displayed");
+
+        User user;
+
+        try {
+            user = userService.loadUserByEmail(loginRequest.getEmail());
+        } catch (EntityNotFoundException e) {
+            throw new SecurityException("User does not exist", e);
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
+                        user.getUsername(),
                         loginRequest.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-
-        User user = (User) authentication.getPrincipal();
 
         Set<String> roles = user
                 .getAuthorities()
