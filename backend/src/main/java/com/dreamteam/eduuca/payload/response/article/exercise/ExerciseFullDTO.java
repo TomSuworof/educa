@@ -1,6 +1,7 @@
-package com.dreamteam.eduuca.payload.response;
+package com.dreamteam.eduuca.payload.response.article.exercise;
 
 import com.dreamteam.eduuca.entities.Exercise;
+import com.dreamteam.eduuca.payload.response.article.ArticleFullDTO;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,10 +9,10 @@ import lombok.ToString;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class ExerciseDTO extends ArticleDTO {
+public class ExerciseFullDTO extends ArticleFullDTO {
     protected final String solution;
 
-    public ExerciseDTO(Exercise exercise) {
+    public ExerciseFullDTO(Exercise exercise) {
         super(exercise);
         this.solution = exercise.getSolution();
     }

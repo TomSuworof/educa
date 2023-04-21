@@ -3,8 +3,8 @@ package com.dreamteam.eduuca.controllers;
 import com.dreamteam.eduuca.config.ControllerUtils;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.RoleEnum;
-import com.dreamteam.eduuca.payload.response.ExerciseDTO;
-import com.dreamteam.eduuca.payload.response.LectureDTO;
+import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
+import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.UserDTO;
 import com.dreamteam.eduuca.services.ExerciseQueryService;
@@ -65,26 +65,26 @@ public class AdminController {
 
     @GetMapping("/exercises")
     @ResponseBody
-    public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(
+    public ResponseEntity<PageResponseDTO<ExerciseShortDTO>> getExercisesPaginated(
             @RequestParam(required = false, defaultValue = "all") String state,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getExercisePaginated() called. State: {}, limit: {}, offset: {}", state, limit, offset);
-        PageResponseDTO<ExerciseDTO> response = exerciseQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
+        PageResponseDTO<ExerciseShortDTO> response = exerciseQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
         log.trace("getExercisePaginated(). Response to send: {}", () -> response);
         return ControllerUtils.processPartialResponse(response);
     }
 
     @GetMapping("/lectures")
     @ResponseBody
-    public ResponseEntity<PageResponseDTO<LectureDTO>> getLecturesPaginated(
+    public ResponseEntity<PageResponseDTO<LectureShortDTO>> getLecturesPaginated(
             @RequestParam(required = false, defaultValue = "all") String state,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getLecturesPaginated() called. State: {}, limit: {}, offset: {}", state, limit, offset);
-        PageResponseDTO<LectureDTO> response = lectureQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
+        PageResponseDTO<LectureShortDTO> response = lectureQueryService.getPageByState(ArticleState.getFromDescription(state), limit, offset);
         log.trace("getLecturesPaginated(). Response to send: {}", () -> response);
         return ControllerUtils.processPartialResponse(response);
     }

@@ -4,8 +4,9 @@ import com.dreamteam.eduuca.config.ControllerUtils;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.Lecture;
 import com.dreamteam.eduuca.payload.request.LectureUploadRequest;
-import com.dreamteam.eduuca.payload.response.LectureDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
+import com.dreamteam.eduuca.payload.response.article.lecture.LectureFullDTO;
+import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;
 import com.dreamteam.eduuca.services.LectureEditorService;
 import com.dreamteam.eduuca.services.LectureQueryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,12 +38,12 @@ public class LectureController {
 
     @GetMapping("")
     @ResponseBody
-    public ResponseEntity<PageResponseDTO<LectureDTO>> getLecturesPaginated(
+    public ResponseEntity<PageResponseDTO<LectureShortDTO>> getLecturesPaginated(
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getLecturesPaginated() called. Limit={}, offset={}", limit, offset);
-        PageResponseDTO<LectureDTO> response = lectureQueryService.getPageByState(ArticleState.PUBLISHED, limit, offset);
+        PageResponseDTO<LectureShortDTO> response = lectureQueryService.getPageByState(ArticleState.PUBLISHED, limit, offset);
         log.trace("getLecturesPaginated(). Response to send: {}", () -> response);
         return ControllerUtils.processPartialResponse(response);
     }
@@ -51,22 +52,22 @@ public class LectureController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<LectureDTO> getLecture(@PathVariable UUID id, Authentication auth) {
+    public ResponseEntity<LectureFullDTO> getLecture(@PathVariable UUID id, Authentication auth) {
         log.debug("getLecture() called. ID to search: {}", id);
-        Lecture Lecture = lectureQueryService.getById(id, auth);
-        log.trace("getLecture(). Lecture to return: {}", () -> Lecture);
-        return ResponseEntity.ok().body(new LectureDTO(Lecture));
+        Lecture lecture = lectureQueryService.getById(id, auth);
+        log.trace("getLecture(). Lecture to return: {}", () -> lecture);
+        return ResponseEntity.ok().body(new LectureFullDTO(lecture));
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<LectureDTO> uploadLecture(@RequestBody LectureUploadRequest Lecture, @RequestParam String action, Authentication auth) {
+    public ResponseEntity<LectureFullDTO> uploadLecture(@RequestBody LectureUploadRequest Lecture, @RequestParam String action, Authentication auth) {
         log.debug("uploadLecture() called. Lecture: {}, action: {}", Lecture, action);
-        LectureDTO LectureDTO = lectureEditorService.upload(Lecture, ArticleState.getFromAction(action), auth);
-        log.trace("uploadLecture(). Result lecture DTO: {}", () -> LectureDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(LectureDTO);
+        LectureFullDTO lectureDTO = lectureEditorService.upload(Lecture, ArticleState.getFromAction(action), auth);
+        log.trace("uploadLecture(). Result lecture DTO: {}", () -> lectureDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lectureDTO);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")

@@ -14,6 +14,7 @@ public abstract class ArticleUploadRequest {
     protected UUID id;
     protected String title;
     protected String customUrl;
+    protected String summary;
     protected String content;
     protected List<String> tags;
 }

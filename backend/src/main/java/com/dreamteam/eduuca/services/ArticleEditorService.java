@@ -4,7 +4,7 @@ import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.payload.request.ArticleUploadRequest;
-import com.dreamteam.eduuca.payload.response.ArticleDTO;
+import com.dreamteam.eduuca.payload.response.article.ArticleFullDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Log4j2
 @RequiredArgsConstructor
-public abstract class ArticleEditorService<E extends Article, R extends ArticleUploadRequest, DTO extends ArticleDTO> {
+public abstract class ArticleEditorService<E extends Article, R extends ArticleUploadRequest, DTO extends ArticleFullDTO> {
     private final UserService userService;
     private final ArticleService articleService;
     private final TagService tagService;

@@ -4,8 +4,9 @@ import com.dreamteam.eduuca.config.ControllerUtils;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.Exercise;
 import com.dreamteam.eduuca.payload.request.ExerciseUploadRequest;
-import com.dreamteam.eduuca.payload.response.ExerciseDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
+import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseFullDTO;
+import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
 import com.dreamteam.eduuca.services.ExerciseEditorService;
 import com.dreamteam.eduuca.services.ExerciseQueryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,12 +38,12 @@ public class ExerciseController {
 
     @GetMapping("")
     @ResponseBody
-    public ResponseEntity<PageResponseDTO<ExerciseDTO>> getExercisesPaginated(
+    public ResponseEntity<PageResponseDTO<ExerciseShortDTO>> getExercisesPaginated(
             @RequestParam(required = false, defaultValue = "10") Integer limit,
             @RequestParam(required = false, defaultValue = "0") Integer offset
     ) {
         log.debug("getExercisesPaginated() called. Limit={}, offset={}", limit, offset);
-        PageResponseDTO<ExerciseDTO> response = exerciseQueryService.getPageByState(ArticleState.PUBLISHED, limit, offset);
+        PageResponseDTO<ExerciseShortDTO> response = exerciseQueryService.getPageByState(ArticleState.PUBLISHED, limit, offset);
         log.trace("getExercisesPaginated(). Response to send: {}", () -> response);
         return ControllerUtils.processPartialResponse(response);
     }
@@ -51,20 +52,20 @@ public class ExerciseController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<ExerciseDTO> getExercise(@PathVariable UUID id, Authentication auth) {
+    public ResponseEntity<ExerciseFullDTO> getExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("getExercise() called. ID to search: {}", id);
         Exercise exercise = exerciseQueryService.getById(id, auth);
         log.trace("getExercise(). Exercise to return: {}", () -> exercise);
-        return ResponseEntity.ok().body(new ExerciseDTO(exercise));
+        return ResponseEntity.ok().body(new ExerciseFullDTO(exercise));
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<ExerciseDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action, Authentication auth) {
+    public ResponseEntity<ExerciseFullDTO> uploadExercise(@RequestBody ExerciseUploadRequest exercise, @RequestParam String action, Authentication auth) {
         log.debug("uploadExercise() called. Exercise: {}, action: {}", exercise, action);
-        ExerciseDTO exerciseDTO = exerciseEditorService.upload(exercise, ArticleState.getFromAction(action), auth);
+        ExerciseFullDTO exerciseDTO = exerciseEditorService.upload(exercise, ArticleState.getFromAction(action), auth);
         log.trace("uploadExercise(). Result exercise DTO: {}", () -> exerciseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(exerciseDTO);
     }

@@ -4,7 +4,7 @@ import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.Tag;
 import com.dreamteam.eduuca.entities.User;
-import com.dreamteam.eduuca.payload.response.ArticleDTO;
+import com.dreamteam.eduuca.payload.response.article.ArticleShortDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
-public abstract class ArticleQueryService<E extends Article, DTO extends ArticleDTO> {
+public abstract class ArticleQueryService<E extends Article, DTO extends ArticleShortDTO> {
     private final UserService userService;
     private final TagService tagService;
     private final ArticleRepository<E> articleRepository;

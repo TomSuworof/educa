@@ -32,6 +32,10 @@ public abstract class Article {
     @Column
     protected String customUrl;
 
+    @Column(columnDefinition = "text")
+    @Field(type = FieldType.Text)
+    protected String summary;
+
     @Size(min = 1)
     @Column(columnDefinition = "text")
     @Field(type = FieldType.Text)

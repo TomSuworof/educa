@@ -19,6 +19,6 @@ public interface ArticleRepository<T extends Article> extends JpaRepository<T, U
 
     Page<T> findByStateAndTags_IdIn(ArticleState state, Set<UUID> tags_id, Pageable pageable);
 
-    @Query(value = "select * from t_article where to_tsvector(title || ' ' || custom_url || ' ' || content || ' ' || solution)  @@ to_tsquery( :query );", nativeQuery = true)
+    @Query(value = "select * from t_article where to_tsvector(title || ' ' || custom_url || ' ' || summary || ' ' || content || ' ' || solution)  @@ to_tsquery( :query );", nativeQuery = true)
     List<T> fullTextSearch(String query);
 }

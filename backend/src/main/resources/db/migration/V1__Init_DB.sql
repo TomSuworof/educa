@@ -34,9 +34,10 @@ create table if not exists t_article
     id               uuid                     not null constraint t_article_pkey primary key,
     title            varchar(255)             not null,
     custom_url       varchar(255)             not null,
+    summary          text                     not null,
     content          text                     not null,
     solution         text,
-    tion_date timestamp with time zone not null,
+    publication_date timestamp with time zone not null,
     state            integer                  not null,
     author_id        uuid                     not null constraint references_to_not_null_user_id references t_user not null
 );
