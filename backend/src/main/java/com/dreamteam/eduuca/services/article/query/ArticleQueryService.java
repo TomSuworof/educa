@@ -1,12 +1,14 @@
-package com.dreamteam.eduuca.services;
+package com.dreamteam.eduuca.services.article.query;
 
 import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.Tag;
 import com.dreamteam.eduuca.entities.User;
-import com.dreamteam.eduuca.payload.response.article.ArticleShortDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
+import com.dreamteam.eduuca.payload.response.article.ArticleShortDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
+import com.dreamteam.eduuca.services.TagService;
+import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,7 +42,7 @@ public abstract class ArticleQueryService<E extends Article, DTO extends Article
         Optional<E> articleOpt = articleRepository.findById(id);
         if (articleOpt.isEmpty()) {
             log.warn("getArticleById(). Article with ID={} does not exist. Will throw exception", id);
-            throw new IllegalStateException("Article with this does not exist");
+            throw new EntityNotFoundException("Article with this ID does not exist");
         }
         E article = articleOpt.get();
 

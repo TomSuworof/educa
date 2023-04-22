@@ -1,7 +1,7 @@
 package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.config.WebUtils;
-import com.dreamteam.eduuca.payload.common.Input;
+import com.dreamteam.eduuca.payload.common.InputDTO;
 import com.dreamteam.eduuca.payload.request.PredictionRequest;
 import com.dreamteam.eduuca.payload.response.PredictionResponse;
 import lombok.extern.log4j.Log4j2;
@@ -43,7 +43,7 @@ public class ModelService {
     private List<String> getPredictionOutput(String text, String url) {
         log.debug("getPredictionOutput() called. Text: {}, url: {}", () -> text, () -> url);
         try {
-            PredictionRequest predictionRequest = new PredictionRequest(new Input(text));
+            PredictionRequest predictionRequest = new PredictionRequest(new InputDTO(text));
             URI uri = URI.create(url);
 
             PredictionResponse response = WebUtils.post(uri, predictionRequest, PredictionResponse.class);

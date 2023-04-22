@@ -1,13 +1,13 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.entities.Tag;
-import com.dreamteam.eduuca.payload.common.Input;
+import com.dreamteam.eduuca.payload.common.InputDTO;
 import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.TagResponse;
-import com.dreamteam.eduuca.services.ExerciseQueryService;
-import com.dreamteam.eduuca.services.LectureQueryService;
+import com.dreamteam.eduuca.services.article.query.ExerciseQueryService;
+import com.dreamteam.eduuca.services.article.query.LectureQueryService;
 import com.dreamteam.eduuca.services.ModelService;
 import com.dreamteam.eduuca.services.TagService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -39,7 +39,7 @@ public class TagController {
     @PostMapping("/suggest")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<TagResponse> suggestTags(@RequestBody Input input) {
+    public ResponseEntity<TagResponse> suggestTags(@RequestBody InputDTO input) {
         log.debug("suggestTags() called. Request: {}", () -> input);
         List<String> tags = modelService.predictTags(input.text());
         TagResponse response = new TagResponse(input.text(), tags);

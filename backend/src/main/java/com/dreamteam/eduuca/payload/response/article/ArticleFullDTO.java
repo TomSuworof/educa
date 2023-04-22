@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class ArticleFullDTO extends ArticleShortDTO {
+public abstract class ArticleFullDTO extends ArticleShortDTO {
     protected final String content;
 
     public ArticleFullDTO(Article article) {

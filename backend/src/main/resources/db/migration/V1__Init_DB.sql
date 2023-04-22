@@ -69,3 +69,11 @@ create table if not exists t_articles_tags
     article_id uuid not null constraint references_to_not_null_article_id references t_article not null,
     tag_id     uuid not null constraint references_to_not_null_tag_id     references t_tag     not null
 );
+
+create table if not exists t_progress
+(
+    user_id    uuid not null constraint references_to_not_null_user_id    references t_user not null,
+    article_id uuid not null constraint references_to_not_null_article_id references t_article not null,
+    progressDTO   integer not null,
+    constraint t_progress_pkey primary key(user_id, article_id)
+);

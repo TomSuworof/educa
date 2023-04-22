@@ -109,8 +109,9 @@ public class UserService implements UserDetailsService {
         user.setRoles(Set.of(role));
 
         log.trace("saveUser(). User to save: {}", () -> user);
-        userRepository.save(user);
+        saveUser(user);
         log.trace("saveUser(). User successfully saved. User: {}", () -> user);
+
 
 //        Executors.newSingleThreadExecutor().submit(() -> {
 //            try {
@@ -165,9 +166,9 @@ public class UserService implements UserDetailsService {
             userFromDB.setPassword(passwordEncoder.encode(userData.getPassword().get()));
         }
 
-        log.trace("updateUser(). New user to save: {}", () -> userFromDB);
-        userRepository.save(userFromDB);
-        log.trace("updateUser(). New user successfully saved. New user: {}", () -> userFromDB);
+        log.trace("updateUser(). User to save: {}", () -> userFromDB);
+        saveUser(userFromDB);
+        log.trace("updateUser(). User successfully saved. New user: {}", () -> userFromDB);
 
         return new UserDTO(userFromDB);
     }
@@ -195,10 +196,16 @@ public class UserService implements UserDetailsService {
 //        });
 
         log.trace("changeRole(). New user to save: {}", () -> userFromDB);
-        userRepository.save(userFromDB);
+        saveUser(userFromDB);
         log.trace("changeRole(). New user successfully saved. New user: {}", () -> userFromDB);
 
         return new UserDTO(userFromDB);
+    }
+
+    private void saveUser(@NotNull User user) {
+        log.debug("saveUser() called. User: {}", () -> user);
+        userRepository.save(user);
+        log.trace("saveUser(). User saved");
     }
 
     public boolean isCurrentPasswordSameAs(@NotNull UUID userId, @NotNull String passwordAnother) {

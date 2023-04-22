@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.payload.response;
 
-import com.dreamteam.eduuca.payload.common.Input;
+import com.dreamteam.eduuca.payload.common.InputDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record PredictionResponse(
-        Input input,
+        InputDTO input,
         List<String> output,
         String id,
         @JsonProperty("created_at") String createdAt,

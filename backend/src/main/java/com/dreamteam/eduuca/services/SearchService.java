@@ -1,6 +1,8 @@
 package com.dreamteam.eduuca.services;
 
 import com.dreamteam.eduuca.payload.response.article.ArticleShortDTO;
+import com.dreamteam.eduuca.services.article.query.ExerciseQueryService;
+import com.dreamteam.eduuca.services.article.query.LectureQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

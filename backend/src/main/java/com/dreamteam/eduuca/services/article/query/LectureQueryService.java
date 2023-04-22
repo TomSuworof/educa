@@ -1,8 +1,10 @@
-package com.dreamteam.eduuca.services;
+package com.dreamteam.eduuca.services.article.query;
 
 import com.dreamteam.eduuca.entities.Lecture;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
+import com.dreamteam.eduuca.services.TagService;
+import com.dreamteam.eduuca.services.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

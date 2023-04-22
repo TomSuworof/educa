@@ -1,10 +1,13 @@
-package com.dreamteam.eduuca.services;
+package com.dreamteam.eduuca.services.article.editor;
 
 import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.entities.ArticleState;
 import com.dreamteam.eduuca.entities.User;
 import com.dreamteam.eduuca.payload.request.ArticleUploadRequest;
 import com.dreamteam.eduuca.payload.response.article.ArticleFullDTO;
+import com.dreamteam.eduuca.services.TagService;
+import com.dreamteam.eduuca.services.UserService;
+import com.dreamteam.eduuca.services.article.ArticleSaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public abstract class ArticleEditorService<E extends Article, R extends ArticleUploadRequest, DTO extends ArticleFullDTO> {
     private final UserService userService;
-    private final ArticleService articleService;
+    private final ArticleSaveService articleSaveService;
     private final TagService tagService;
 
     public DTO upload(R uploadRequest, ArticleState articleState, Authentication auth) {
@@ -46,7 +49,7 @@ public abstract class ArticleEditorService<E extends Article, R extends ArticleU
         article.setTags(tagService.saveTags(uploadRequest.getTags()));
 
         log.trace("upload(). Result article to save: {}", () -> article);
-        articleService.saveArticle(article);
+        articleSaveService.saveArticle(article);
         log.trace("upload(). Exercise successfully saved. Exercise: {}", () -> article);
 
         return entityToDTO(article);
@@ -54,7 +57,7 @@ public abstract class ArticleEditorService<E extends Article, R extends ArticleU
 
     protected abstract @NotNull E newBlankEntity();
 
-    protected abstract void enrichFromRequest(E articleToEnrich, R uploadRequest);
+    protected abstract void enrichFromRequest(@NotNull E articleToEnrich, @NotNull R uploadRequest);
 
-    protected abstract @NotNull DTO entityToDTO(E article);
+    protected abstract @NotNull DTO entityToDTO(@NotNull E article);
 }

@@ -1,4 +1,4 @@
-package com.dreamteam.eduuca.services;
+package com.dreamteam.eduuca.services.article;
 
 import com.dreamteam.eduuca.entities.Article;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class ArticleService {
+public class ArticleSaveService {
     private final ArticleRepository<Article> articleRepository;
 
     public void saveArticle(@NotNull Article article) {
