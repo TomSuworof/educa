@@ -17,4 +17,5 @@ public abstract class ArticleUploadRequest {
     protected String summary;
     protected String content;
     protected List<String> tags;
+    protected UUID themeID;
 }

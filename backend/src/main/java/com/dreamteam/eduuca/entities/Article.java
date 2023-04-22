@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
@@ -59,6 +60,11 @@ public abstract class Article {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     @org.springframework.data.annotation.Transient
     protected Set<Tag> tags;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "theme_id")
+    @Nullable
+    protected Theme theme;
 
     public abstract String dType();
 }

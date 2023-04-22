@@ -39,7 +39,8 @@ create table if not exists t_article
     solution         text,
     publication_date timestamp with time zone not null,
     state            integer                  not null,
-    author_id        uuid                     not null constraint references_to_not_null_user_id references t_user not null
+    author_id        uuid                     not null constraint references_to_not_null_user_id  references t_user  not null,
+    theme_id         uuid                              constraint references_to_not_null_theme_id references t_theme not null
 );
 
 create table if not exists t_question
@@ -76,4 +77,10 @@ create table if not exists t_progress
     article_id uuid not null constraint references_to_not_null_article_id references t_article not null,
     progressDTO   integer not null,
     constraint t_progress_pkey primary key(user_id, article_id)
+);
+
+create table if not exists t_theme (
+    id        uuid not null primary key,
+    parent_id uuid constraint references_to_not_null_theme_id references t_hierarchy not null,
+    name      varchar(255)
 );

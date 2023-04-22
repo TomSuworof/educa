@@ -47,6 +47,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .antMatchers("/api/exercises/**",
                         "/api/lectures/**",
                         "/api/progress/**",
+                        "/api/themes/**",
                         "/api/auth/**",
                         "/api/password_reset/**",
                         "/api/search/**",

@@ -98,7 +98,7 @@ public class ProgressService {
         if (progressOpt.isPresent()) {
             log.trace("getProgress(). Progress found: {}", progressOpt::get);
             Progress progress = progressOpt.get();
-            return new ProgressDTO(progress.getUserID(), progress.getArticleID(), progress.getProgress().name());
+            return new ProgressDTO(progress);
         } else {
             log.trace("getProgress(). Progress not found. Going to save as '{}'", ProgressEnum.INCOMPLETE);
             saveProgressEntity(userID, articleID, ProgressEnum.INCOMPLETE);
