@@ -1,8 +1,8 @@
 package com.dreamteam.eduuca.services.article.editor;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.ArticleState;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.request.ArticleUploadRequest;
 import com.dreamteam.eduuca.payload.response.article.ArticleFullDTO;
 import com.dreamteam.eduuca.services.TagService;
@@ -22,7 +22,7 @@ public abstract class ArticleEditorService<E extends Article, R extends ArticleU
     private final ArticleSaveService articleSaveService;
     private final TagService tagService;
 
-    public DTO upload(R uploadRequest, ArticleState articleState, Authentication auth) {
+    public DTO upload(@NotNull R uploadRequest, @NotNull ArticleState articleState, @NotNull Authentication auth) {
         log.debug("upload() called. Article upload request: {}, exercise state: {}", () -> uploadRequest, () -> articleState);
         E article = newBlankEntity();
 
@@ -52,12 +52,15 @@ public abstract class ArticleEditorService<E extends Article, R extends ArticleU
         articleSaveService.saveArticle(article);
         log.trace("upload(). Exercise successfully saved. Exercise: {}", () -> article);
 
+        postProcess(article, auth);
         return entityToDTO(article);
     }
 
     protected abstract @NotNull E newBlankEntity();
 
     protected abstract void enrichFromRequest(@NotNull E articleToEnrich, @NotNull R uploadRequest);
+
+    protected abstract void postProcess(@NotNull E article, @NotNull Authentication auth);
 
     protected abstract @NotNull DTO entityToDTO(@NotNull E article);
 }

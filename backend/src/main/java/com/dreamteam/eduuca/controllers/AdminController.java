@@ -1,8 +1,8 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.config.ControllerUtils;
-import com.dreamteam.eduuca.entities.ArticleState;
-import com.dreamteam.eduuca.entities.RoleEnum;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.user.role.RoleEnum;
 import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
@@ -45,7 +45,7 @@ public class AdminController {
         PageResponseDTO<UserDTO> response = userService.getUsersPaginated(limit, offset);
         log.trace("getUsersPaginated(). Response to send: {}", () -> response);
 
-        if (!response.isHasBefore() && !response.isHasAfter()) {
+        if (!response.hasBefore() && !response.hasAfter()) {
             log.trace("getUsersPaginated(). Response contains all users. Response status is OK");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } else {

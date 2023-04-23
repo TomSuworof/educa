@@ -1,12 +1,11 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.Exercise;
-import com.dreamteam.eduuca.entities.Question;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.article.exercise.Exercise;
+import com.dreamteam.eduuca.entities.article.exercise.question.Question;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.request.AnswerRequest;
-import com.dreamteam.eduuca.payload.request.QuestionUploadRequest;
 import com.dreamteam.eduuca.payload.response.AnswerResponse;
-import com.dreamteam.eduuca.payload.response.QuestionDTO;
+import com.dreamteam.eduuca.payload.common.QuestionDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
 import com.dreamteam.eduuca.repositories.QuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,37 +36,47 @@ public class QuestionService {
         }
         Question question = questionOpt.get();
         log.trace("getQuestion(). Question found: {}", () -> question);
-        return new QuestionDTO(question.getId(), question.getExercise().getId(), question.getRemark(), question.getHint());
+        return new QuestionDTO(question.getId(), question.getExercise().getId(), null, question.getRemark(), question.getHint());
     }
 
-    public @NotNull QuestionDTO addQuestion(@NotNull QuestionUploadRequest questionUploadRequest, @NotNull Authentication auth) {
-        log.debug("addQuestion() called. Request: {}", () -> questionUploadRequest);
-        Optional<Exercise> exerciseOpt = exerciseRepository.findById(questionUploadRequest.getExerciseId());
+    public @NotNull QuestionDTO saveQuestion(@NotNull QuestionDTO questionUploadRequest, @NotNull Authentication auth) {
+        log.debug("saveQuestion() called. Request: {}", () -> questionUploadRequest);
+        Question question = new Question();
+
+        if (questionUploadRequest.id() != null) {
+            log.trace("saveQuestion(). Request contains ID, going to set");
+            question.setId(questionUploadRequest.id());
+        } else {
+            log.trace("saveQuestion(). Request does not contain ID, setting new random");
+            question.setId(UUID.randomUUID());
+        }
+
+        Optional<Exercise> exerciseOpt = exerciseRepository.findById(questionUploadRequest.exerciseId());
         if (exerciseOpt.isEmpty()) {
-            log.warn("addQuestion(). Exercise with required ID={} not found", questionUploadRequest.getExerciseId());
+            log.warn("saveQuestion(). Exercise with required ID={} not found", questionUploadRequest.exerciseId());
             throw new EntityNotFoundException("Exercise does not exist");
         }
         Exercise exercise = exerciseOpt.get();
 
         User currentUser = userService.getUserFromAuthentication(auth);
         if (!userService.canUserEditArticle(currentUser, exercise)) {
-            log.warn("addQuestion(). Current user does not have rights to access exercise and questions. Exercise ID={}, user: {}", exercise::getId, () -> currentUser);
+            log.warn("saveQuestion(). Current user does not have rights to access exercise and questions. Exercise ID={}, user: {}", exercise::getId, () -> currentUser);
             throw new SecurityException("Current user does not have rights to access exercise and questions");
         }
 
-        Question question = new Question();
-        question.setId(UUID.randomUUID());
         question.setExercise(exercise);
-        question.setAnswer(questionUploadRequest.getAnswer());
-        question.setRemark(questionUploadRequest.getRemark());
-        question.setHint(questionUploadRequest.getHint());
+        question.setAnswer(questionUploadRequest.answer());
+        question.setRemark(questionUploadRequest.remark());
+        question.setHint(questionUploadRequest.hint());
 
+        log.trace("saveQuestion(). Saving question: {}", () -> question);
         Question questionSaved = questionRepository.save(question);
-        log.trace("addQuestion(). Saved question: {}", () -> questionSaved);
+        log.trace("saveQuestion(). Saved question: {}", () -> questionSaved);
 
         return new QuestionDTO(
                 questionSaved.getId(),
                 questionSaved.getExercise().getId(),
+                questionSaved.getAnswer(),
                 questionSaved.getRemark(),
                 questionSaved.getHint()
         );

@@ -1,10 +1,10 @@
 package com.dreamteam.eduuca.services.progress;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.Exercise;
-import com.dreamteam.eduuca.entities.Lecture;
-import com.dreamteam.eduuca.entities.RoleEnum;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.article.exercise.Exercise;
+import com.dreamteam.eduuca.entities.article.lecture.Lecture;
+import com.dreamteam.eduuca.entities.user.role.RoleEnum;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.entities.progress.Progress;
 import com.dreamteam.eduuca.entities.progress.ProgressEnum;
 import com.dreamteam.eduuca.entities.progress.ProgressId;

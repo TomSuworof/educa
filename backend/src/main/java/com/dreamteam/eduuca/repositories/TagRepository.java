@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.eduuca.entities.Tag;
+import com.dreamteam.eduuca.entities.article.tag.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

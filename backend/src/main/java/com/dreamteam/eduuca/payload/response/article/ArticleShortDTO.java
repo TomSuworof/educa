@@ -1,7 +1,7 @@
 package com.dreamteam.eduuca.payload.response.article;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.Tag;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.article.tag.Tag;
 import com.dreamteam.eduuca.payload.response.ObjectDTO;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.config.ControllerUtils;
-import com.dreamteam.eduuca.entities.ArticleState;
-import com.dreamteam.eduuca.entities.Lecture;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.article.lecture.Lecture;
 import com.dreamteam.eduuca.payload.request.LectureUploadRequest;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureFullDTO;

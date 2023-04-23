@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.payload.response.article.exercise;
 
-import com.dreamteam.eduuca.entities.Exercise;
+import com.dreamteam.eduuca.entities.article.exercise.Exercise;
 import com.dreamteam.eduuca.payload.response.article.ArticleFullDTO;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

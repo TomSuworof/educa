@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.eduuca.entities.Lecture;
+import com.dreamteam.eduuca.entities.article.lecture.Lecture;
 import org.springframework.stereotype.Repository;
 
 @Repository

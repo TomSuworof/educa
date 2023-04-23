@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.config;
 
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.User;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

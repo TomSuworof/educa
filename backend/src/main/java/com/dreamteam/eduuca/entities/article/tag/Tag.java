@@ -1,4 +1,4 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.article.tag;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

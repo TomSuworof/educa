@@ -1,7 +1,7 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.PasswordResetRequest;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.passwordreset.PasswordResetRequest;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.request.UserDataRequest;
 import com.dreamteam.eduuca.repositories.PasswordResetRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.config;
 
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

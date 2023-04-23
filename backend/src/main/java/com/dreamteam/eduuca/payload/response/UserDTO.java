@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.payload.response;
 
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.User;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;

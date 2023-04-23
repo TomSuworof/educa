@@ -1,5 +1,7 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.user;
 
+import com.dreamteam.eduuca.entities.user.role.Role;
+import com.dreamteam.eduuca.entities.user.role.RoleEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

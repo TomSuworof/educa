@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.services.article.editor;
 
-import com.dreamteam.eduuca.entities.Lecture;
+import com.dreamteam.eduuca.entities.article.lecture.Lecture;
 import com.dreamteam.eduuca.payload.request.LectureUploadRequest;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureFullDTO;
 import com.dreamteam.eduuca.services.TagService;
@@ -8,6 +8,7 @@ import com.dreamteam.eduuca.services.UserService;
 import com.dreamteam.eduuca.services.article.ArticleSaveService;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -33,5 +34,10 @@ public class LectureEditorService extends ArticleEditorService<Lecture, LectureU
     @Override
     protected @NotNull LectureFullDTO entityToDTO(@NotNull Lecture lecture) {
         return new LectureFullDTO(lecture);
+    }
+
+    @Override
+    protected void postProcess(@NotNull Lecture article, @NotNull Authentication auth) {
+        // do nothing
     }
 }

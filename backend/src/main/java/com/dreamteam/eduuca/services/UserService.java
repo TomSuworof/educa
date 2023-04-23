@@ -1,9 +1,9 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.Role;
-import com.dreamteam.eduuca.entities.RoleEnum;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.user.role.Role;
+import com.dreamteam.eduuca.entities.user.role.RoleEnum;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.request.SignupRequest;
 import com.dreamteam.eduuca.payload.request.UserDataRequest;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;

@@ -1,7 +1,8 @@
 package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.ArticleState;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.article.theme.Theme;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,8 @@ public interface ArticleRepository<T extends Article> extends JpaRepository<T, U
     Page<T> findByState(ArticleState state, Pageable pageable);
 
     Page<T> findByStateAndTags_IdIn(ArticleState state, Set<UUID> tags_id, Pageable pageable);
+
+    Page<T> findByTheme(Theme theme, Pageable pageable);
 
     @Query(value = "select * from t_article where to_tsvector(title || ' ' || custom_url || ' ' || summary || ' ' || content || ' ' || solution)  @@ to_tsquery( :query );", nativeQuery = true)
     List<T> fullTextSearch(String query);

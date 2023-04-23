@@ -1,4 +1,4 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.user.passwordreset;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

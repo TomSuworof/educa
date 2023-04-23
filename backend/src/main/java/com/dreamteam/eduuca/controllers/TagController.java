@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.controllers;
 
-import com.dreamteam.eduuca.entities.Tag;
+import com.dreamteam.eduuca.entities.article.tag.Tag;
 import com.dreamteam.eduuca.payload.common.InputDTO;
 import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
 import com.dreamteam.eduuca.payload.response.article.lecture.LectureShortDTO;

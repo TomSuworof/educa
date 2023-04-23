@@ -1,5 +1,6 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.article.lecture;
 
+import com.dreamteam.eduuca.entities.article.Article;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

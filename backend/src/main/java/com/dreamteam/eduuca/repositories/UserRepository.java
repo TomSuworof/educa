@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

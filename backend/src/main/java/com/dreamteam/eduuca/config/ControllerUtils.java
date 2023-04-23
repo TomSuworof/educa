@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 @Log4j2
 public class ControllerUtils {
     public static <T extends ObjectDTO> ResponseEntity<PageResponseDTO<T>> processPartialResponse(PageResponseDTO<T> response) {
-        if (!response.isHasBefore() && !response.isHasAfter()) {
+        if (!response.hasBefore() && !response.hasAfter()) {
             log.trace("processPartialResponse(). Response contains all entities. Response status is OK");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } else {

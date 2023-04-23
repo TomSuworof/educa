@@ -1,7 +1,7 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.config.JwtUtils;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.request.LoginRequest;
 import com.dreamteam.eduuca.payload.request.SignupRequest;
 import com.dreamteam.eduuca.payload.response.JwtResponse;

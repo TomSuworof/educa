@@ -1,8 +1,8 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.config.ControllerUtils;
-import com.dreamteam.eduuca.entities.ArticleState;
-import com.dreamteam.eduuca.entities.Exercise;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.article.exercise.Exercise;
 import com.dreamteam.eduuca.payload.request.ExerciseUploadRequest;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseFullDTO;
@@ -54,8 +54,19 @@ public class ExerciseController {
     @ResponseBody
     public ResponseEntity<ExerciseFullDTO> getExercise(@PathVariable UUID id, Authentication auth) {
         log.debug("getExercise() called. ID to search: {}", id);
-        Exercise exercise = exerciseQueryService.getById(id, auth);
+        Exercise exercise = exerciseQueryService.clearAnswers(exerciseQueryService.getById(id, auth));
         log.trace("getExercise(). Exercise to return: {}", () -> exercise);
+        return ResponseEntity.ok().body(new ExerciseFullDTO(exercise));
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/get_full/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<ExerciseFullDTO> getFullExercise(@PathVariable UUID id, Authentication auth) {
+        log.debug("getFullExercise() called. ID to search: {}", id);
+        Exercise exercise = exerciseQueryService.getById(id, auth);
+        log.trace("getFullExercise(). Exercise to return: {}", () -> exercise);
         return ResponseEntity.ok().body(new ExerciseFullDTO(exercise));
     }
 

@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.repositories;
 
-import com.dreamteam.eduuca.entities.Question;
+import com.dreamteam.eduuca.entities.article.exercise.question.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

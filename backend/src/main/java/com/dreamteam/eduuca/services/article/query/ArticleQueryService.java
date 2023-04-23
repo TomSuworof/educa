@@ -1,13 +1,15 @@
 package com.dreamteam.eduuca.services.article.query;
 
-import com.dreamteam.eduuca.entities.Article;
-import com.dreamteam.eduuca.entities.ArticleState;
-import com.dreamteam.eduuca.entities.Tag;
-import com.dreamteam.eduuca.entities.User;
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.article.ArticleState;
+import com.dreamteam.eduuca.entities.article.tag.Tag;
+import com.dreamteam.eduuca.entities.article.theme.Theme;
+import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.payload.response.PageResponseDTO;
 import com.dreamteam.eduuca.payload.response.article.ArticleShortDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
 import com.dreamteam.eduuca.services.TagService;
+import com.dreamteam.eduuca.services.ThemeService;
 import com.dreamteam.eduuca.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 public abstract class ArticleQueryService<E extends Article, DTO extends ArticleShortDTO> {
     private final UserService userService;
     private final TagService tagService;
+    private final ThemeService themeService;
+
     private final ArticleRepository<E> articleRepository;
 
     protected abstract @Nullable DTO parseToDTO(@NotNull E article);
@@ -109,19 +113,35 @@ public abstract class ArticleQueryService<E extends Article, DTO extends Article
     }
 
     public PageResponseDTO<DTO> getPageByTags(List<String> tagNames, Integer limit, Integer offset) {
-        log.debug("getPageByTags(). Limit: {}, offset: {}", limit, offset);
+        log.debug("getPageByTags() called. Limit: {}, offset: {}", limit, offset);
 
         log.trace("getPageByTags(). Tag names count: {}", tagNames::size);
         Set<UUID> tagIDs = tagService.getTags(tagNames).stream().map(Tag::getId).collect(Collectors.toSet());
         log.trace("getPageByTags(). Tag IDs count: {}", tagIDs::size);
 
-        Page<E> exercises = articleRepository.findByStateAndTags_IdIn(ArticleState.PUBLISHED, tagIDs, PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "publicationDate")));
+        Page<E> articles = articleRepository.findByStateAndTags_IdIn(ArticleState.PUBLISHED, tagIDs, PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "publicationDate")));
 
         return new PageResponseDTO<>(
-                offset > 0 && exercises.getTotalElements() > 0,
-                (offset + limit) < exercises.getTotalElements(),
-                exercises.getTotalElements(),
-                exercises.getContent().stream().map(this::parseToDTO).toList()
+                offset > 0 && articles.getTotalElements() > 0,
+                (offset + limit) < articles.getTotalElements(),
+                articles.getTotalElements(),
+                articles.getContent().stream().map(this::parseToDTO).toList()
+        );
+    }
+
+    public PageResponseDTO<DTO> getPageByTheme(@NotNull UUID themeID, Integer limit, Integer offset) {
+        log.debug("getPageByTheme() called. Theme ID: {}, limit: {}, offset: {}", themeID, limit, offset);
+
+        Theme theme = themeService.getTheme(themeID);
+        log.trace("getPageByTheme(). Found theme: {}", () -> theme);
+
+        Page<E> articles = articleRepository.findByTheme(theme, PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "publicationDate")));
+
+        return new PageResponseDTO<>(
+                offset > 0 && articles.getTotalElements() > 0,
+                (offset + limit) < articles.getTotalElements(),
+                articles.getTotalElements(),
+                articles.getContent().stream().map(this::parseToDTO).toList()
         );
     }
 }

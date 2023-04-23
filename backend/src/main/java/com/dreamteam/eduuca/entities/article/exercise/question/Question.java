@@ -1,9 +1,12 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.article.exercise.question;
 
+import com.dreamteam.eduuca.entities.article.exercise.Exercise;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +29,7 @@ public class Question {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Exercise exercise;
 
     @Column

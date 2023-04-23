@@ -1,9 +1,8 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.payload.request.AnswerRequest;
-import com.dreamteam.eduuca.payload.request.QuestionUploadRequest;
 import com.dreamteam.eduuca.payload.response.AnswerResponse;
-import com.dreamteam.eduuca.payload.response.QuestionDTO;
+import com.dreamteam.eduuca.payload.common.QuestionDTO;
 import com.dreamteam.eduuca.services.QuestionService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +43,9 @@ public class QuestionController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<QuestionDTO> addQuestion(@RequestBody QuestionUploadRequest questionUploadRequest, Authentication auth) {
+    public ResponseEntity<QuestionDTO> addQuestion(@RequestBody QuestionDTO questionUploadRequest, Authentication auth) {
         log.debug("addQuestion() called. Request: {}", () -> questionUploadRequest);
-        QuestionDTO question = questionService.addQuestion(questionUploadRequest, auth);
+        QuestionDTO question = questionService.saveQuestion(questionUploadRequest, auth);
         log.trace("addQQuestion(). Response to send: {}", question);
         return ResponseEntity.status(HttpStatus.CREATED).body(question);
     }

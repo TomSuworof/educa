@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.services.article;
 
-import com.dreamteam.eduuca.entities.Article;
+import com.dreamteam.eduuca.entities.article.Article;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,7 +59,7 @@ public class ArticleSaveService {
     private void editDraft(@NotNull Article newArticle, @NotNull Article oldArticle) {
         log.debug("editDraft() called. New article: {}, old article: {}", () -> newArticle, () -> oldArticle);
 
-        if (newArticle.getAuthor().equals(oldArticle.getAuthor())) {
+        if (!newArticle.getAuthor().equals(oldArticle.getAuthor())) {
             throw new SecurityException("Current user does not have rights to edit article");
         }
 

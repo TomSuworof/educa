@@ -1,9 +1,14 @@
-package com.dreamteam.eduuca.entities;
+package com.dreamteam.eduuca.entities.article;
 
+import com.dreamteam.eduuca.entities.article.tag.Tag;
+import com.dreamteam.eduuca.entities.article.theme.Theme;
+import com.dreamteam.eduuca.entities.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -62,6 +67,7 @@ public abstract class Article {
     protected Set<Tag> tags;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "theme_id")
     @Nullable
     protected Theme theme;

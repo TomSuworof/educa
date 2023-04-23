@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.payload.common;
 
-import com.dreamteam.eduuca.entities.Theme;
+import com.dreamteam.eduuca.entities.article.theme.Theme;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

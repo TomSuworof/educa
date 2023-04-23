@@ -1,6 +1,6 @@
 package com.dreamteam.eduuca.services;
 
-import com.dreamteam.eduuca.entities.Tag;
+import com.dreamteam.eduuca.entities.article.tag.Tag;
 import com.dreamteam.eduuca.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
