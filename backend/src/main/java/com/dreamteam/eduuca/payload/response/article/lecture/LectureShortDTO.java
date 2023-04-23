@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class LectureShortDTO extends ArticleShortDTO {
-    public LectureShortDTO(Lecture lecture) {
-        super(lecture);
+    public LectureShortDTO(Lecture lecture, Integer likeCount) {
+        super(lecture, likeCount);
     }
 }

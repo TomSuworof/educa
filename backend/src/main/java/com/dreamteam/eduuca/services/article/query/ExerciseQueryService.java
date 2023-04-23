@@ -4,6 +4,7 @@ import com.dreamteam.eduuca.entities.article.exercise.Exercise;
 import com.dreamteam.eduuca.payload.common.QuestionDTO;
 import com.dreamteam.eduuca.payload.response.article.exercise.ExerciseShortDTO;
 import com.dreamteam.eduuca.repositories.ArticleRepository;
+import com.dreamteam.eduuca.services.like.LikeService;
 import com.dreamteam.eduuca.services.TagService;
 import com.dreamteam.eduuca.services.ThemeService;
 import com.dreamteam.eduuca.services.UserService;
@@ -18,15 +19,21 @@ import java.util.Arrays;
 
 @Log4j2
 @Service
-public class ExerciseQueryService extends ArticleQueryService<Exercise, ExerciseShortDTO> {
-    public ExerciseQueryService(UserService userService, TagService tagService, ThemeService themeService, ArticleRepository<Exercise> articleRepository) {
-        super(userService, tagService, themeService, articleRepository);
+public class ExerciseQueryService extends AbstractArticleQueryService<Exercise, ExerciseShortDTO> {
+    public ExerciseQueryService(
+            UserService userService,
+            TagService tagService,
+            ThemeService themeService,
+            LikeService likeService,
+            ArticleRepository<Exercise> articleRepository
+    ) {
+        super(userService, tagService, themeService, likeService, articleRepository);
     }
 
     @Nullable
     @Override
-    protected ExerciseShortDTO parseToDTO(@NotNull Exercise exercise) {
-        return new ExerciseShortDTO(exercise);
+    protected ExerciseShortDTO parseToDTO(@NotNull Exercise exercise, @Nullable Integer likeCount) {
+        return new ExerciseShortDTO(exercise, likeCount);
     }
 
     public @NotNull Exercise clearAnswers(@NotNull Exercise exercise) {

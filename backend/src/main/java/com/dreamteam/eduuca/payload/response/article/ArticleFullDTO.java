@@ -19,7 +19,7 @@ public abstract class ArticleFullDTO extends ArticleShortDTO {
     protected final UUID themeID;
 
     public ArticleFullDTO(Article article) {
-        super(article);
+        super(article, null);
         this.content = article.getContent();
         this.themeID = Optional.ofNullable(article.getTheme()).map(Theme::getId).orElse(null);
     }

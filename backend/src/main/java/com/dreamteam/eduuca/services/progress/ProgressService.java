@@ -1,18 +1,15 @@
 package com.dreamteam.eduuca.services.progress;
 
 import com.dreamteam.eduuca.entities.article.Article;
-import com.dreamteam.eduuca.entities.article.exercise.Exercise;
-import com.dreamteam.eduuca.entities.article.lecture.Lecture;
-import com.dreamteam.eduuca.entities.user.role.RoleEnum;
-import com.dreamteam.eduuca.entities.user.User;
 import com.dreamteam.eduuca.entities.progress.Progress;
 import com.dreamteam.eduuca.entities.progress.ProgressEnum;
 import com.dreamteam.eduuca.entities.progress.ProgressId;
+import com.dreamteam.eduuca.entities.user.User;
+import com.dreamteam.eduuca.entities.user.role.RoleEnum;
 import com.dreamteam.eduuca.payload.common.ProgressDTO;
 import com.dreamteam.eduuca.repositories.ProgressRepository;
 import com.dreamteam.eduuca.services.UserService;
-import com.dreamteam.eduuca.services.article.query.ExerciseQueryService;
-import com.dreamteam.eduuca.services.article.query.LectureQueryService;
+import com.dreamteam.eduuca.services.article.query.ArticleQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -28,10 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProgressService {
     private final ProgressRepository progressRepository;
-
-    private final ExerciseQueryService exerciseQueryService;
-    private final LectureQueryService lectureQueryService;
-
+    private final ArticleQueryService articleQueryService;
     private final UserService userService;
 
     public void saveProgressEntity(@NotNull ProgressDTO progressDTO, @NotNull Authentication auth) {
@@ -45,7 +39,7 @@ public class ProgressService {
         }
         UUID userID = userFromRequest.getId();
 
-        Optional<Article> articleOpt = getArticle(progressDTO.articleID(), auth);
+        Optional<Article> articleOpt = articleQueryService.getArticle(progressDTO.articleID(), auth);
         if (articleOpt.isEmpty()) {
             log.warn("saveProgress(). Article with ID={} not found", progressDTO.articleID());
             throw new EntityNotFoundException("Article with required ID not found");
@@ -69,27 +63,6 @@ public class ProgressService {
 
         progressRepository.save(progress);
         log.trace("saveProgressEntity(). Saved progress: {}", progress);
-    }
-
-    private Optional<Article> getArticle(@NotNull UUID articleID, @NotNull Authentication auth) {
-        log.debug("getArticle() called. Article ID={}", articleID);
-        try {
-            Exercise exercise = exerciseQueryService.getById(articleID, auth);
-            log.trace("getArticle(). Exercise with ID={} found", articleID);
-            return Optional.of(exercise);
-        } catch (EntityNotFoundException ignored) {
-            log.warn("getArticle(). Exercise with ID={} not found", articleID);
-        }
-
-        try {
-            Lecture lecture = lectureQueryService.getById(articleID, auth);
-            log.trace("getArticle(). Lecture with ID={} found", articleID);
-            return Optional.of(lecture);
-        } catch (EntityNotFoundException ignored) {
-            log.warn("getArticle(). Lecture with ID={} not found", articleID);
-        }
-
-        return Optional.empty();
     }
 
     public @NotNull ProgressDTO getProgress(@NotNull UUID userID, @NotNull UUID articleID) {

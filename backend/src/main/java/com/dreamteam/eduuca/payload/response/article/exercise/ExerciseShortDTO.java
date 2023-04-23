@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class ExerciseShortDTO extends ArticleShortDTO {
-    public ExerciseShortDTO(Exercise exercise) {
-        super(exercise);
+    public ExerciseShortDTO(Exercise exercise, Integer likeCount) {
+        super(exercise, likeCount);
     }
 }

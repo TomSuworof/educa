@@ -48,6 +48,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         "/api/lectures/**",
                         "/api/progress/**",
                         "/api/themes/**",
+                        "/api/likes/**",
                         "/api/auth/**",
                         "/api/password_reset/**",
                         "/api/search/**",
