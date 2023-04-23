@@ -44,16 +44,13 @@ public class ArticleSaveService {
 
     private void createDraft(@NotNull Article newArticle) {
         log.debug("createDraft() called. New article: {}", () -> newArticle);
+
         if (articleRepository.findByCustomUrl(newArticle.getCustomUrl()).isPresent()) {
             log.warn("createDraft(). Article with same URL '{}' already exists. Will throw exception", newArticle.getCustomUrl());
             throw new IllegalStateException(String.format("Article with this URL %s already exists", newArticle.getCustomUrl()));
         }
 
-        newArticle.setPublicationDate(OffsetDateTime.now());
-
-        log.trace("createDraft(). Article to save: {}", () -> newArticle);
-        articleRepository.save(newArticle);
-        log.trace("createDraft(). Article successfully saved: {}", () -> newArticle);
+        saveArticleToRepo(newArticle, OffsetDateTime.now());
     }
 
     private void editDraft(@NotNull Article newArticle, @NotNull Article oldArticle) {
@@ -63,13 +60,7 @@ public class ArticleSaveService {
             throw new SecurityException("Current user does not have rights to edit article");
         }
 
-        newArticle.setPublicationDate(OffsetDateTime.now());
-
-        articleRepository.delete(oldArticle);
-        log.trace("editDraft(). Old article successfully deleted: {}", () -> oldArticle);
-
-        articleRepository.save(newArticle);
-        log.trace("editDraft(). Article successfully saved: {}", () -> newArticle);
+        saveArticleToRepo(newArticle, OffsetDateTime.now());
     }
 
     private void savePublished(@NotNull Article newArticle) {
@@ -93,11 +84,7 @@ public class ArticleSaveService {
             throw new IllegalStateException(String.format("Article with this URL %s already exists", newArticle.getCustomUrl()));
         }
 
-        newArticle.setPublicationDate(OffsetDateTime.now());
-
-        log.trace("createPublished(). Article to save: {}", () -> newArticle);
-        articleRepository.save(newArticle);
-        log.trace("createPublished(). Article successfully saved: {}", () -> newArticle);
+        saveArticleToRepo(newArticle, OffsetDateTime.now());
     }
 
     private void editPublished(@NotNull Article newArticle, @NotNull Article oldArticle) {
@@ -107,12 +94,13 @@ public class ArticleSaveService {
             throw new SecurityException("Current user does not have rights to edit article");
         }
 
-        newArticle.setPublicationDate(oldArticle.getPublicationDate());
+        saveArticleToRepo(newArticle, oldArticle.getPublicationDate());
+    }
 
-        articleRepository.delete(oldArticle);
-        log.trace("editPublished(). Old article successfully deleted: {}", () -> oldArticle);
-
-        articleRepository.save(newArticle);
-        log.trace("editPublished(). Article successfully saved: {}", () -> newArticle);
+    private void saveArticleToRepo(@NotNull Article article, OffsetDateTime time) {
+        log.debug("saveArticleToRepo() called. Article: {}", () -> article);
+        article.setPublicationDate(time);
+        Article saved = articleRepository.save(article);
+        log.trace("saveArticleToRepo(). Article successfully saved: {}", () -> saved);
     }
 }
