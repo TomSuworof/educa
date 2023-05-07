@@ -21,9 +21,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Progress {
     @Id
+    @Column(name = "user_id")
     private UUID userID;
 
     @Id
+    @Column(name = "article_id")
     private UUID articleID;
 
     @Column
