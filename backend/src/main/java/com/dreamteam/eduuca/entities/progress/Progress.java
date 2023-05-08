@@ -1,15 +1,13 @@
 package com.dreamteam.eduuca.entities.progress;
 
+import com.dreamteam.eduuca.entities.article.Article;
+import com.dreamteam.eduuca.entities.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Getter
@@ -27,6 +25,16 @@ public class Progress {
     @Id
     @Column(name = "article_id")
     private UUID articleID;
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "article_id", referencedColumnName = "id")
+    private Article article;
 
     @Column
     private ProgressEnum progress;
