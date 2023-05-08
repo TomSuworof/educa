@@ -1,15 +1,19 @@
 package com.dreamteam.eduuca.entities.user.passwordreset;
 
+import com.dreamteam.eduuca.entities.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.util.Calendar;
@@ -29,14 +33,16 @@ public class PasswordResetRequest {
     @GeneratedValue
     private UUID id;
 
-    @NotEmpty
-    private String username;
+    @OneToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     @PastOrPresent
     private Date created;
 
-    public PasswordResetRequest(String username) {
-        this.username = username;
+    public PasswordResetRequest(User user) {
+        this.user = user;
         this.created = new Date();
     }
 

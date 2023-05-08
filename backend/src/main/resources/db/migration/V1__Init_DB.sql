@@ -1,8 +1,8 @@
 create table if not exists t_password_reset_request
 (
-    id       uuid         not null constraint t_password_reset_request_pkey primary key,
-    created  timestamp,
-    username varchar(255) not null
+    id       uuid       not null constraint t_password_reset_request_pkey  primary key,
+    user_id  uuid       not null constraint references_to_not_null_user_id references t_user  not null,
+    created  timestamp
 );
 
 create table if not exists t_role

@@ -24,7 +24,8 @@ public class PasswordResetController {
 
     @PostMapping("/create_request")
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody ResponseEntity<PasswordResetResponse> createPasswordResetRequest(@RequestParam String username) {
+    @ResponseBody
+    public ResponseEntity<PasswordResetResponse> createPasswordResetRequest(@RequestParam String username) {
         log.debug("createPasswordResetRequest() called. Username: {}", username);
         passwordResetService.createPasswordResetRequestFor(username);
         String hiddenEmail = passwordResetService.sendEmailWithCodeTo(username);

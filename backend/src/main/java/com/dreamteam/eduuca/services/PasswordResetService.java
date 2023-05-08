@@ -26,7 +26,8 @@ public class PasswordResetService {
 
     public void createPasswordResetRequestFor(String username) {
         log.debug("createPasswordResetRequestFor() called. Username: {}", () -> username);
-        passwordResetRepository.save(new PasswordResetRequest(username));
+        User requiredUser = userService.loadUserByUsername(username);
+        passwordResetRepository.save(new PasswordResetRequest(requiredUser));
         log.trace("createPasswordResetRequestFor(). Password reset request for {} saved successfully", () -> username);
     }
 
@@ -35,7 +36,7 @@ public class PasswordResetService {
         User requiredUser = userService.loadUserByUsername(username);
 
         String code = passwordResetRepository
-                .findByUsername(username)
+                .findByUser_Username(username)
                 .orElseThrow(IllegalArgumentException::new)
                 .getId()
                 .toString();
@@ -84,7 +85,7 @@ public class PasswordResetService {
         UserDataRequest newUserData = new UserDataRequest();
         newUserData.setPassword(Optional.ofNullable(newPassword));
 
-        UUID userId = userService.loadUserByUsername(passwordResetRequest.getUsername()).getId();
+        UUID userId = userService.loadUserByUsername(passwordResetRequest.getUser().getUsername()).getId();
 
         passwordResetRepository.delete(passwordResetRequest);
         log.trace("setNewPassword(). Password reset request is completed and deleted");
