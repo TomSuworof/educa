@@ -1,7 +1,7 @@
 package com.dreamteam.eduuca.controllers;
 
 import com.dreamteam.eduuca.payload.common.LikeDTO;
-import com.dreamteam.eduuca.services.like.LikeSaveService;
+import com.dreamteam.eduuca.services.like.LikeUpdateService;
 import com.dreamteam.eduuca.services.like.LikeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
 public class LikeController {
-    private final LikeSaveService likeSaveService;
+    private final LikeUpdateService likeUpdateService;
     private final LikeService likeService;
 
     @PostMapping("")
@@ -34,7 +35,15 @@ public class LikeController {
     @ResponseBody
     public void saveLike(@RequestBody LikeDTO likeDTO, Authentication auth) {
         log.debug("saveLike() called. Like: {}", likeDTO);
-        likeSaveService.saveLike(likeDTO, auth);
+        likeUpdateService.saveLike(likeDTO, auth);
+    }
+
+    @DeleteMapping("")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void deleteLike(@RequestBody LikeDTO likeDTO, Authentication auth) {
+        log.debug("deleteLike() called. Like: {}", likeDTO);
+        likeUpdateService.deleteLike(likeDTO, auth);
     }
 
     @GetMapping("")

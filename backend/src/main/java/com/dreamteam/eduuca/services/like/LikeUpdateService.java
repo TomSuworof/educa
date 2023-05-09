@@ -20,17 +20,27 @@ import java.util.Optional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class LikeSaveService {
+public class LikeUpdateService {
     private final UserService userService;
     private final ArticleQueryService articleQueryService;
     private final LikeRepository likeRepository;
 
     public void saveLike(@NotNull LikeDTO likeDTO, @NotNull Authentication auth) {
         log.debug("saveLike() called. Like: {}", likeDTO);
+        Like like = likeRepository.save(getLike(likeDTO, auth));
+        log.trace("saveLike(). Like saved: {}", like);
+    }
 
+    public void deleteLike(@NotNull LikeDTO likeDTO, @NotNull Authentication auth) {
+        log.debug("deleteLike() called. Like: {}", likeDTO);
+        likeRepository.delete(getLike(likeDTO, auth));
+        log.trace("deleteLike(). Like deleted: {}", likeDTO);
+    }
+
+    private Like getLike(@NotNull LikeDTO likeDTO, @NotNull Authentication auth) {
         Optional<Article> articleOpt = articleQueryService.getArticle(likeDTO.articleID(), auth);
         if (articleOpt.isEmpty() || articleOpt.get().getState() == ArticleState.IN_EDITING) {
-            log.warn("saveLike(). Article with ID={} does not exist", likeDTO.articleID());
+            log.warn("getLike(). Article with ID={} does not exist", likeDTO.articleID());
             throw new EntityNotFoundException("Article with required ID does not exist");
         }
         Article article = articleOpt.get();
@@ -39,12 +49,10 @@ public class LikeSaveService {
         User userFromAuth = userService.getUserFromAuthentication(auth);
 
         if (!user.equals(userFromAuth)) {
-            log.warn("saveLike(). User from auth does not have rights to save this like");
-            throw new SecurityException("User does not have rights to set this like");
+            log.warn("getLike(). User from auth does not have rights to update this like");
+            throw new SecurityException("User does not have rights to update this like");
         }
 
-        log.trace("saveLike(). Saving like: {}", likeDTO);
-        Like like = likeRepository.save(new Like(user.getId(), article.getId(), user, article));
-        log.trace("saveLike(). Like saved: {}", like);
+        return new Like(user.getId(), article.getId(), user, article);
     }
 }
